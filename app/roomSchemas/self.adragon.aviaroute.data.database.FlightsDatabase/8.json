@@ -1,0 +1,182 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 8,
+    "identityHash": "8d1743720d9e8c2808c6e162391ee393",
+    "entities": [
+      {
+        "tableName": "airports",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`airportIndex` INTEGER NOT NULL, `code` TEXT NOT NULL, `name` TEXT NOT NULL, `info` TEXT NOT NULL, PRIMARY KEY(`airportIndex`))",
+        "fields": [
+          {
+            "fieldPath": "airportIndex",
+            "columnName": "airportIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "info",
+            "columnName": "info",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "airportIndex"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "segments",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`segmentIndex` INTEGER NOT NULL, `departureIndex` INTEGER NOT NULL, `destinationIndex` INTEGER NOT NULL, `flightTime` INTEGER NOT NULL, `price` REAL NOT NULL, PRIMARY KEY(`segmentIndex`), FOREIGN KEY(`departureIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`destinationIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "segmentIndex",
+            "columnName": "segmentIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "departureIndex",
+            "columnName": "departureIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinationIndex",
+            "columnName": "destinationIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flightTime",
+            "columnName": "flightTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "segmentIndex"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_segments_departureIndex",
+            "unique": false,
+            "columnNames": [
+              "departureIndex"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_segments_departureIndex` ON `${TABLE_NAME}` (`departureIndex`)"
+          },
+          {
+            "name": "index_segments_destinationIndex",
+            "unique": false,
+            "columnNames": [
+              "destinationIndex"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_segments_destinationIndex` ON `${TABLE_NAME}` (`destinationIndex`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "airports",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "departureIndex"
+            ],
+            "referencedColumns": [
+              "airportIndex"
+            ]
+          },
+          {
+            "table": "airports",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "destinationIndex"
+            ],
+            "referencedColumns": [
+              "airportIndex"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "flights",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`flightIndex` INTEGER NOT NULL, `segmentIndex` INTEGER NOT NULL, `segmentPosition` INTEGER NOT NULL, `departureDate` INTEGER NOT NULL, `key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "flightIndex",
+            "columnName": "flightIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "segmentIndex",
+            "columnName": "segmentIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "segmentPosition",
+            "columnName": "segmentPosition",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "departureDate",
+            "columnName": "departureDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "key",
+            "columnName": "key",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "key"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d1743720d9e8c2808c6e162391ee393')"
+    ]
+  }
+}

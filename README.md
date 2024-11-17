@@ -1,8 +1,21 @@
 
 
+<!-- Table of Contents -->
+# :notebook_with_decorative_cover: Table of Contents
+
+- [About the Project](#star2-about-the-project)
+  * [Screenshots](#camera-screenshots)
+  * [Tech Stack](#space_invader-tech-stack)
+  * [Features](#dart-features)
+- [License](#warning-license)
+- [Acknowledgements](#gem-acknowledgements)
+
 <!-- About the Project -->
+# Aviaroute
+
 ## :star2: About the Project
 
+Aviaroute is an Android application designed to search for and book flight tickets. It allows users to view available flight routes, including information such as departure and destination airports, ticket prices, and flight times.
 
 <!-- Screenshots -->
 ### :camera: Screenshots
@@ -12,9 +25,6 @@
   Add screenshots later
 </div>
 
-# Aviaroute
-
-Aviaroute is an Android application designed to search for and book flight tickets. It allows users to view available flight routes, including information such as departure and destination airports, ticket prices, and flight times.
 
 <!-- Features -->
 ### :dart: Features
@@ -24,9 +34,9 @@ Aviaroute is an Android application designed to search for and book flight ticke
 
 <!-- TechStack -->
 ### :space_invader: Tech Stack
-- **![kotlin](https://kotlinlang.org/)**: Main programming language used for Android development.
-- **![Android SDK](https://developer.android.com/tools/releases/platform-tools)**: Provides the necessary tools and APIs for building Android applications. 
-- **![Room Database](https://developer.android.com/training/data-storage/room)**: Local database for managing flight and airport data with seamless integration into the app.
+- **[kotlin](https://kotlinlang.org/)**: Main programming language used for Android development.
+- **[Android SDK](https://developer.android.com/tools/releases/platform-tools)**: Provides the necessary tools and APIs for building Android applications. 
+- **[Room Database](https://developer.android.com/training/data-storage/room)**: Local database for managing flight and airport data with seamless integration into the app.
 
 
 ## Installation
@@ -39,3 +49,7 @@ Aviaroute is an Android application designed to search for and book flight ticke
 ## :warning: License
 
 Distributed under the no License. See LICENSE.txt for more information.
+
+<!-- Acknowledgments -->
+## :gem: Acknowledgements
+ - [Readme Template](https://github.com/othneildrew/Best-README-Template)

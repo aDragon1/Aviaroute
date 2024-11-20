@@ -8,17 +8,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Entity(tableName = "airports")
 data class Airport(
-    @ColumnInfo(name = "airportIndex")
+    @ColumnInfo("airportIndex")
     @PrimaryKey
     val airportIndex: Int,
 
-    @ColumnInfo(name = "code")
+    @ColumnInfo("code")
     val code: String,
 
-    @ColumnInfo(name = "name")
+    @ColumnInfo("name")
     val name: String,
 
-    @ColumnInfo(name = "info")
+    @ColumnInfo("info")
     val info: String
 ) {
     override fun toString(): String = "Airport(airportIndex=$airportIndex, code=$code)"

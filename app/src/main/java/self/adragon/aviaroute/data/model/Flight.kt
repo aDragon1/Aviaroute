@@ -2,28 +2,40 @@ package self.adragon.aviaroute.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
 
 @Serializable
-@Entity(tableName = "flights")
+@Entity(
+    tableName = "flights",
+    foreignKeys = [
+        ForeignKey(
+            entity = Segment::class,
+            parentColumns = ["segmentIndex"],
+            childColumns = ["segmentIndex"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["segmentIndex"])]
+)
 data class Flight(
-    @ColumnInfo(name = "flightIndex")
+    @ColumnInfo("flightIndex")
     val flightIndex: Int,
 
-    @ColumnInfo(name = "segmentIndex")
+    @ColumnInfo("segmentIndex")
     val segmentIndex: Int,
 
-    @ColumnInfo(name = "segmentPosition")
+    @ColumnInfo("segmentPosition")
     val segmentPosition: Int,
 
-    @ColumnInfo(name = "departureDate")
+    @ColumnInfo("departureDateEpochSeconds")
     @Contextual
-    val departureDate: LocalDate,
+    val departureDateEpochSeconds: Long,
 ) {
-    @ColumnInfo(name = "key")
+    @ColumnInfo("key")
     @PrimaryKey(autoGenerate = true)
     var key: Int = 0
 }

@@ -1,7 +1,6 @@
 package self.adragon.aviaroute.data.database.dao
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Query
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
@@ -16,7 +15,7 @@ interface SearchFlightsDAO {
                 "         MIN(f.segmentPosition) AS firstSegmentPosition,     " +
                 "         MAX(f.segmentPosition) AS lastSegmentPosition,     " +
                 "         SUM(s.price) AS totalPrice,     " +
-                "         SUM(s.flightTime) as totalTime,      " +
+                "         SUM(s.flightTimeEpochSeconds) as totalTime,      " +
                 "     GROUP_CONCAT(s.segmentIndex, ', ') AS allSegments, " +
                 "     GROUP_CONCAT(a.code, ', ') AS allCodes  " +
                 "     FROM      " +
@@ -28,8 +27,8 @@ interface SearchFlightsDAO {
                 " )     " +
                 " SELECT      " +
                 "   fb.flightIndex as flightIndex,      " +
-                "   firstSegFlight.departureDate as departureDateEpoch,     " +
-                "   (firstSegFlight.departureDate + fb.totalTime) as destinationDateEpoch,    " +
+                "   firstSegFlight.departureDateEpochSeconds as departureDateEpoch,     " +
+                "   (firstSegFlight.departureDateEpochSeconds + fb.totalTime) as destinationDateEpoch,    " +
                 "   fb.totalPrice,        " +
                 "   fb.allSegments as flightSegments, " +
                 "   (departureAirport.code || ', ' || fb.allCodes) as flightAirportCodes " +
@@ -55,6 +54,6 @@ interface SearchFlightsDAO {
     fun getSearchedFlights(
         departureAirportIndex: Int,
         destinationAirportIndex: Int,
-        errValue:Int
+        errValue: Int
     ): LiveData<List<SearchResultFlight>>
 }

@@ -38,6 +38,12 @@ class FlightSearchResultFragment(private val onCustomDismiss: () -> Unit) :
         flightSearchResultRecyclerView = view.findViewById(R.id.flightSearchResultRecyclerView)
         flightSearchResultRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        val adapter = FlightRecyclerViewAdapter { clickedItem ->
+            searchResultViewModel.setClickedItem(clickedItem)
+
+            startDialog()
+        }
+        flightSearchResultRecyclerView.adapter = adapter
 
         val errorValue = -1
         val departureIndex = arguments?.getInt("departureIndex", errorValue) ?: errorValue
@@ -55,23 +61,22 @@ class FlightSearchResultFragment(private val onCustomDismiss: () -> Unit) :
                 val codes = res.flightAirportCodes
                 Log.d("mytag", "flights index - $index : $codes")
             }
+            adapter.setData(it)
         }
 
         searchResultViewModel.setSearchResult(departureIndex, destinationIndex, errorValue)
-
-        val adapter = FlightRecyclerViewAdapter { clickedItem ->
-            searchResultViewModel.setClickedItem(clickedItem) // TODO: Вернуть
-
-            startDialog()
-        }
-
-        flightSearchResultRecyclerView.adapter = adapter
     }
 
     private fun startDialog() {
         if (isSearchInfoDialogShown) return
 
-        val frag = SearchFlightInfoFragment { isSearchInfoDialogShown = false }
+        val frag = SearchFlightInfoFragment {
+            isSearchInfoDialogShown = false
+
+            searchResultViewModel.clickedItem.value = null
+            Log.d("mytag", "clicked item - ${searchResultViewModel.clickedItem.value}")
+        }
+
         frag.show(childFragmentManager, "")
         isSearchInfoDialogShown = true
     }

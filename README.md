@@ -34,8 +34,8 @@ Aviaroute is an Android application designed to search for and book flight ticke
 
 <!-- TechStack -->
 ### :space_invader: Tech Stack
-- **[kotlin](https://kotlinlang.org/)**: Main programming language used for Android development.
 - **[Android SDK](https://developer.android.com/tools/releases/platform-tools)**: Provides the necessary tools and APIs for building Android applications. 
+- **[kotlin](https://kotlinlang.org/)**: Main programming language used for Android development.
 - **[Room Database](https://developer.android.com/training/data-storage/room)**: Local database for managing flight and airport data with seamless integration into the app.
 
 
@@ -48,7 +48,7 @@ Aviaroute is an Android application designed to search for and book flight ticke
 
 ## :warning: License
 
-Distributed under the no License. See LICENSE.txt for more information.
+Distributed under the no License. See LICENSE for more information.
 
 <!-- Acknowledgments -->
 ## :gem: Acknowledgements

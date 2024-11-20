@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
 
-//        populateDatabase()
+        populateDatabase()
     }
 
     private fun populateDatabase() {

@@ -1,6 +1,5 @@
 package self.adragon.aviaroute.utils
 
-import android.util.Log
 import self.adragon.aviaroute.data.model.Airport
 import self.adragon.aviaroute.data.model.Flight
 import self.adragon.aviaroute.data.model.Segment
@@ -27,6 +26,7 @@ class Generator {
     private val minDate = LocalDate.now()
     private val maxDate = LocalDate.of(2026, 1, 1)
 
+    // Seconds in _
     private val SECOND = 1
     private val MINUTE = 60 * SECOND
     private val HOUR = 60 * MINUTE
@@ -46,7 +46,9 @@ class Generator {
         val price = (minPrice + Math.random() * (maxPrice - minPrice)).round()
 
         val flightTime = (minFlightTime..maxFlightTime).random().toLong()
-        return Segment(index, departureIndex, destinationIndex, flightTime, price)
+        return Segment(
+            index, departureIndex, destinationIndex, flightTime, price, "Im lazy to generate it"
+        )
     }
 
     private fun takeSequentialSegments(segments: List<Segment>, n: Int): List<Int> {
@@ -84,11 +86,11 @@ class Generator {
 
             val departureDate = generateRandomDate()
 
+            val epochSeconds = departureDate.toEpochDay() * DAY
             flightSegments.mapIndexed { segPosition, segIndex ->
-                Flight(flightIndex, segIndex, segPosition + 1, departureDate)
+                Flight(flightIndex, segIndex, segPosition + 1, epochSeconds)
             }
         }
-
 
 
         val resultFlights = mutableListOf<Flight>()

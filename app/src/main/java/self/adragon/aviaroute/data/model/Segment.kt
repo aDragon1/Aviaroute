@@ -15,7 +15,8 @@ import java.time.LocalDate
         ForeignKey(
             entity = Airport::class,
             parentColumns = ["airportIndex"],
-            childColumns = ["departureIndex"]
+            childColumns = ["departureIndex"],
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Airport::class,
@@ -26,19 +27,22 @@ import java.time.LocalDate
     ],
 )
 data class Segment(
-    @ColumnInfo(name = "segmentIndex")
+    @ColumnInfo("segmentIndex")
     @PrimaryKey
     val segmentIndex: Int,
 
-    @ColumnInfo(name = "departureIndex", index = true)
+    @ColumnInfo("departureIndex", index = true)
     val departureIndex: Int,
 
-    @ColumnInfo(name = "destinationIndex", index = true)
+    @ColumnInfo("destinationIndex", index = true)
     val destinationIndex: Int,
 
-    @ColumnInfo(name = "flightTime")
-    val flightTime: Long,
+    @ColumnInfo(name = "flightTimeEpochSeconds")
+    val flightTimeEpochSeconds: Long,
 
-    @ColumnInfo(name = "price")
-    val price: Double
+    @ColumnInfo("price")
+    val price: Double,
+
+    @ColumnInfo("flightNumber")
+    val flightNumber: String
 )

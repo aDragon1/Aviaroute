@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 11,
-    "identityHash": "7c2a6eec991025e43ba43afbb349b945",
+    "version": 16,
+    "identityHash": "b12909ce0cd35430c53d7a90129595d2",
     "entities": [
       {
         "tableName": "airports",
@@ -44,7 +44,7 @@
       },
       {
         "tableName": "segments",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`segmentIndex` INTEGER NOT NULL, `departureIndex` INTEGER NOT NULL, `destinationIndex` INTEGER NOT NULL, `flightTime` INTEGER NOT NULL, `price` REAL NOT NULL, `flightNumber` TEXT NOT NULL, PRIMARY KEY(`segmentIndex`), FOREIGN KEY(`departureIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`destinationIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`segmentIndex` INTEGER NOT NULL, `departureIndex` INTEGER NOT NULL, `destinationIndex` INTEGER NOT NULL, `flightTimeEpochSeconds` INTEGER NOT NULL, `price` REAL NOT NULL, `flightNumber` TEXT NOT NULL, PRIMARY KEY(`segmentIndex`), FOREIGN KEY(`departureIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`destinationIndex`) REFERENCES `airports`(`airportIndex`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "segmentIndex",
@@ -65,8 +65,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "flightTime",
-            "columnName": "flightTime",
+            "fieldPath": "flightTimeEpochSeconds",
+            "columnName": "flightTimeEpochSeconds",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -112,7 +112,7 @@
         "foreignKeys": [
           {
             "table": "airports",
-            "onDelete": "NO ACTION",
+            "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "departureIndex"
@@ -136,7 +136,7 @@
       },
       {
         "tableName": "flights",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`flightIndex` INTEGER NOT NULL, `segmentIndex` INTEGER NOT NULL, `segmentPosition` INTEGER NOT NULL, `departureDate` INTEGER NOT NULL, `key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`flightIndex` INTEGER NOT NULL, `segmentIndex` INTEGER NOT NULL, `segmentPosition` INTEGER NOT NULL, `departureDateEpochSeconds` INTEGER NOT NULL, `key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`segmentIndex`) REFERENCES `segments`(`segmentIndex`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "flightIndex",
@@ -157,8 +157,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "departureDateEpoch",
-            "columnName": "departureDate",
+            "fieldPath": "departureDateEpochSeconds",
+            "columnName": "departureDateEpochSeconds",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -175,6 +175,54 @@
             "key"
           ]
         },
+        "indices": [
+          {
+            "name": "index_flights_segmentIndex",
+            "unique": false,
+            "columnNames": [
+              "segmentIndex"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_flights_segmentIndex` ON `${TABLE_NAME}` (`segmentIndex`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "segments",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "segmentIndex"
+            ],
+            "referencedColumns": [
+              "segmentIndex"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "purchased",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`purchasedIndex` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `flightIndex` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "purchasedIndex",
+            "columnName": "purchasedIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flightIndex",
+            "columnName": "flightIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "purchasedIndex"
+          ]
+        },
         "indices": [],
         "foreignKeys": []
       }
@@ -182,7 +230,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c2a6eec991025e43ba43afbb349b945')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b12909ce0cd35430c53d7a90129595d2')"
     ]
   }
 }

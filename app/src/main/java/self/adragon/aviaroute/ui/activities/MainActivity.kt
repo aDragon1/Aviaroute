@@ -15,7 +15,8 @@ import self.adragon.aviaroute.data.repo.AirportRepository
 import self.adragon.aviaroute.data.repo.FlightsRepository
 import self.adragon.aviaroute.data.repo.SegmentRepository
 import self.adragon.aviaroute.ui.adapters.ViewPagerAdapter
-import self.adragon.aviaroute.ui.fragments.FlightSearchFragment
+import self.adragon.aviaroute.ui.fragments.buyTicketBranch.FlightSearchFragment
+import self.adragon.aviaroute.ui.fragments.viewPurchasedBranch.ProfileFragment
 import self.adragon.aviaroute.utils.Generator
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         viewPager2 = findViewById(R.id.mainViewPager2)
         tabLayout = findViewById(R.id.tabLayout)
 
-        val fragments: List<Fragment> = listOf(FlightSearchFragment())
+        val fragments: List<Fragment> = listOf(FlightSearchFragment(), ProfileFragment())
 
         viewPager2.adapter = ViewPagerAdapter(fragments, this)
         viewPager2.isUserInputEnabled = false
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
 
-        populateDatabase()
+//        populateDatabase()
     }
 
     private fun populateDatabase() {

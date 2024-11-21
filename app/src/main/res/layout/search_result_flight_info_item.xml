@@ -3,24 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="2dp"
+    android:layout_marginStart="8dp"
     android:layout_marginTop="10dp"
-    android:layout_marginEnd="2dp"
+    android:layout_marginEnd="8dp"
     android:padding="16dp"
-    app:cardCornerRadius="8dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
+
 
         <TextView
             android:id="@+id/flightNumberTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Номер рейса" />
+            android:text="Номер рейса"
+            android:textSize="18sp" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,14 +37,17 @@
                 android:id="@+id/departureTimeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Дата вылета" />
+                android:text="Дата вылета"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/departureAirportTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Аэропорт вылета" />
+                android:text="Аэропорт вылета"
+                android:textSize="16sp" />
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,20 +61,24 @@
                 android:id="@+id/destinationTimeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Дата прилета" />
+                android:text="Дата прилета"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/destinationAirportTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Аэропорт прилета" />
+                android:text="Аэропорт прилета"
+                android:textSize="16sp" />
         </LinearLayout>
+
 
         <TextView
             android:id="@+id/priceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="Цена билета" />
+            android:text="Цена билета"
+            android:textSize="16sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -14,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="5dp"
-        android:text="123"
         android:textColor="@color/black"
         android:textSize="19sp" />
 </androidx.cardview.widget.CardView>

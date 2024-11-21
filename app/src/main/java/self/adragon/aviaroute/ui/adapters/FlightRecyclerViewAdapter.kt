@@ -24,7 +24,6 @@ class FlightRecyclerViewAdapter(
     }
 
     inner class FlightRVViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val idTextView: TextView = itemView.findViewById(R.id.idTextView)
         val airlineTextView: TextView = itemView.findViewById(R.id.airlineTextView)
         val departureTextView: TextView = itemView.findViewById(R.id.departureTextView)
         val destinationTextView: TextView = itemView.findViewById(R.id.destinationTextView)
@@ -55,7 +54,6 @@ class FlightRecyclerViewAdapter(
 
         val flight = flights[position]
         holder.apply {
-            idTextView.text = flight.flightIndex.toString()
             airlineTextView.text = "Airline add late" // TODO: Add airline
             departureTextView.text = flight.flightAirportCodes.first()
             destinationTextView.text = flight.flightAirportCodes.last()

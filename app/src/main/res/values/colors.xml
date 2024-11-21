@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#BB86FC</color>
+    <color name="primaryVariant">#3700B3</color>
+    <color name="secondary">#03DAC6</color>
+    <color name="background">#121212</color>
+    <color name="cardBackground">#1E1E1E</color>
+    <color name="textPrimary">#FFFFFF</color>
+    <color name="textSecondary">#B0B0B0</color>
+    <color name="buttonText">#000000</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

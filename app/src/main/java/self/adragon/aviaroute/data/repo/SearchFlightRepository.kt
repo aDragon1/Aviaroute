@@ -6,8 +6,7 @@ class SearchFlightRepository(private val searchFlightsDAO: SearchFlightsDAO) {
 
     fun getSearchedFlights(
         departureAirportIndex: Int, destinationAirportIndex: Int, errValue: Int
-    ) =
-        searchFlightsDAO.getSearchedFlights(
-            departureAirportIndex, destinationAirportIndex, errValue
-        )
+    ) = searchFlightsDAO.getSearchedFlights(
+        departureAirportIndex, destinationAirportIndex, errValue
+    )
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Профиль -->
+    <include
+        layout="@layout/user_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Ближайший рейс:"
+        android:textColor="@color/textPrimary"
+        android:textSize="20sp"
+        tools:ignore="HardcodedText" />
+
+    <!-- Информация о рейсе -->
+    <include
+        android:id="@+id/flightListItemInclude"
+        layout="@layout/flight_list_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Кнопка истории покупок -->
+    <Button
+        android:id="@+id/purchaseHistoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/primary"
+        android:fontFamily="sans-serif"
+        android:text="История покупок"
+        android:textColor="@color/buttonText"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText" />
+</LinearLayout>

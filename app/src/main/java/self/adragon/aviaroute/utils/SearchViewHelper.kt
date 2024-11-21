@@ -6,6 +6,7 @@ import android.database.MatrixCursor
 import android.provider.BaseColumns
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 
@@ -30,6 +31,13 @@ class SearchViewHelper(val airportNames: List<Pair<String, Int>>) {
                 return true
             }
         })
+
+        val id = androidx.appcompat.R.id.search_close_btn
+        val closeButton = searchView.findViewById<ImageView>(id)
+        closeButton.setOnClickListener {
+            searchView.setQuery("", false)
+            onSubmit(-2)
+        }
 
         searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
             changeSearchViewCursorVisibility(v as SearchView, hasFocus)

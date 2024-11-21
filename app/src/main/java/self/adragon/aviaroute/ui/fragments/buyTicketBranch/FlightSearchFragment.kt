@@ -1,4 +1,4 @@
-package self.adragon.aviaroute.ui.fragments
+package self.adragon.aviaroute.ui.fragments.buyTicketBranch
 
 import android.app.SearchManager
 import android.os.Bundle
@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.CursorAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.fragment.app.Fragment
@@ -20,8 +19,6 @@ import kotlinx.coroutines.withContext
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.data.database.FlightsDatabase
 import self.adragon.aviaroute.data.repo.AirportRepository
-import self.adragon.aviaroute.data.repo.SearchFlightRepository
-import self.adragon.aviaroute.ui.fragments.dialogFragments.FlightSearchResultFragment
 import self.adragon.aviaroute.utils.SearchViewHelper
 
 class FlightSearchFragment : Fragment(R.layout.fragment_flight_search), OnClickListener {
@@ -69,7 +66,7 @@ class FlightSearchFragment : Fragment(R.layout.fragment_flight_search), OnClickL
         val from = arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1)
         val to = intArrayOf(R.id.searchItemTextView)
         val suggestionAdapter = SimpleCursorAdapter(
-            context, R.layout.search_item,
+            requireContext(), R.layout.search_item,
             null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         )
 
@@ -79,9 +76,11 @@ class FlightSearchFragment : Fragment(R.layout.fragment_flight_search), OnClickL
         val helper = SearchViewHelper(airportNames.mapIndexed { index, s -> s to index })
         helper.setSearchViewListener(departureAirportSearchView) { index ->
             departureIndex = index + 1
+            Log.d("mytag", "departureIndex - $departureIndex")
         }
         helper.setSearchViewListener(destinationAirportSearchView) { index ->
             destinationIndex = index + 1
+            Log.d("mytag", "destinationIndex - $destinationIndex")
         }
     }
 
@@ -91,27 +90,39 @@ class FlightSearchFragment : Fragment(R.layout.fragment_flight_search), OnClickL
                 val depQ = departureAirportSearchView.query
                 val destQ = destinationAirportSearchView.query
 
+                val tempIndex = destinationIndex
+                destinationIndex = departureIndex
+                departureIndex = tempIndex
+
                 departureAirportSearchView.setQuery(destQ, false)
                 destinationAirportSearchView.setQuery(depQ, false)
             }
 
             R.id.searchButton -> {
 
-                if (departureIndex == -1 && destinationIndex == -1) {
-                    val s = "Выберите аэропорт отправления или аэропорт назначения"
-                    Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show()
-                    return
-                }
-
-                val searchResultFrag =
-                    FlightSearchResultFragment { isSearchResultDialogShown = false }
-                val bundle = Bundle()
-
-                bundle.putInt("departureIndex", departureIndex)
-                bundle.putInt("destinationIndex", destinationIndex)
-
-                searchResultFrag.arguments = bundle
+//                if (departureIndex == -1 && destinationIndex == -1) {
+//                    val s = "Выберите аэропорт отправления или аэропорт назначения"
+//                    Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show()
+//                    return
+//                }
                 if (!isSearchResultDialogShown) {
+                    val searchResultFrag =
+                        FlightSearchResultFragment { isSearchResultDialogShown = false }
+                    val bundle = Bundle()
+
+                    bundle.putInt("departureIndex", departureIndex)
+                    bundle.putInt("destinationIndex", destinationIndex)
+                    searchResultFrag.arguments = bundle
+//
+//                    val transaction = childFragmentManager.beginTransaction()
+//                    transaction.setCustomAnimations(
+//                        R.anim.slide_in_up,
+//                        R.anim.slide_out_down
+//                    )
+//                    transaction.addToBackStack(null)
+//                    transaction.add(searchResultFrag, "")
+//                    transaction.commit()
+
                     searchResultFrag.show(childFragmentManager, "")
                     isSearchResultDialogShown = true
                 }

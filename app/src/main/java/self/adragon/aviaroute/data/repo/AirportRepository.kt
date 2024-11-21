@@ -6,7 +6,9 @@ import self.adragon.aviaroute.data.model.Airport
 class AirportRepository(private val airportsDAO: AirportsDAO) {
     fun getAllAirports() = airportsDAO.getAllAirports()
 
-    fun getAirportByIndex(index: Int) = airportsDAO.getAirportByIndex(index)
+    private fun getAirportByIndex(index: Int) = airportsDAO.getAirportByIndex(index)
+
+    fun getAirportByIndexes(indexes: List<Int>) = indexes.map { getAirportByIndex(it) }
 
     suspend fun insert(airport: Airport) = airportsDAO.insert(airport)
 }

@@ -47,7 +47,6 @@ interface SearchFlightsDAO {
                 " WHERE " +
                 "(:departureAirportIndex = :errValue OR " +
                 "       departureAirport.airportIndex = :departureAirportIndex) " +
-                "" +
                 " AND (:destinationAirportIndex = :errValue OR " +
                 "       destinationAirport.airportIndex = :destinationAirportIndex) "
     )

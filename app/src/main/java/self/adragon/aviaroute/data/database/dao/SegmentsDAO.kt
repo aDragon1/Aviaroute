@@ -14,6 +14,9 @@ interface SegmentsDAO {
     @Query("SELECT * FROM segments where segmentIndex = :index")
     fun segByIndex(index: Int): Segment
 
+    @Query("SELECT flightTimeEpochSeconds FROM segments where segmentIndex = :index")
+    fun getSegmentFlightTime(index: Int): Long
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(segment: Segment)
 }

@@ -1,6 +1,5 @@
 package self.adragon.aviaroute.data.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,6 +11,9 @@ import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 interface PurchasedDAO {
     @Query("SELECT * FROM purchased")
     fun getAllPurchased(): List<Purchased>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(purchased: Purchased)
 
     @Query(
         "WITH FlightBounds AS (     " +
@@ -53,6 +55,7 @@ interface PurchasedDAO {
     )
     fun mapToSearchResult(flightIndex: Int): SearchResultFlight
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(purchased: Purchased)
+    @Query("SELECT EXISTS(SELECT 1 FROM purchased WHERE flightIndex = :flightIndex)")
+    fun contains(flightIndex:Int):Boolean
 }
+

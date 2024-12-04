@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    app:cardBackgroundColor="@color/cardBackground"
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp">
 
@@ -36,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:text="Имя пользователя"
-                android:textColor="@color/textPrimary"
                 android:textSize="20sp"
                 tools:ignore="HardcodedText" />
 
@@ -47,7 +45,6 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif"
                 android:text="Описание пользователя"
-                android:textColor="@color/textSecondary"
                 android:textSize="16sp"
                 tools:ignore="HardcodedText" />
         </LinearLayout>

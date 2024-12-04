@@ -16,25 +16,25 @@ import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import self.adragon.aviaroute.data.repo.AirportRepository
 import self.adragon.aviaroute.data.repo.SegmentRepository
 
-class SearchFlightInfoFragmentItem : Fragment(R.layout.search_result_flight_info_item) {
+class SearchFlightInfoItem : Fragment(R.layout.search_result_flight_info_item) {
 
     private lateinit var flightNumberTextView: TextView
     private lateinit var departureTimeTextView: TextView
     private lateinit var departureAirportTextView: TextView
     private lateinit var destinationTimeTextView: TextView
     private lateinit var destinationAirportTextView: TextView
-    private lateinit var priceTextView: TextView
+    private lateinit var flightSummaryTextView: TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val departureTimeEpoch = arguments?.getLong("departureTimeEpoch", -1) ?: -1
+        val departureTimeEpoch = arguments?.getLong("departureTimeEpoch", -1L) ?: -1L
         val segmentsIndexesIncludeCurrent = arguments
             ?.getIntArray("segmentsIndexesIncludeCurrent") ?: IntArray(0)
 
         setViews(view)
         if (departureTimeEpoch == -1L) {
-            priceTextView.text = "Ошибка"
+            flightSummaryTextView.text = "Ошибка"
             return
         }
 
@@ -60,7 +60,7 @@ class SearchFlightInfoFragmentItem : Fragment(R.layout.search_result_flight_info
         departureAirportTextView = itemView.findViewById(R.id.departureAirportTextView)
         destinationTimeTextView = itemView.findViewById(R.id.destinationTimeTextView)
         destinationAirportTextView = itemView.findViewById(R.id.destinationAirportTextView)
-        priceTextView = itemView.findViewById(R.id.priceTextView)
+        flightSummaryTextView = itemView.findViewById(R.id.flightSummaryTextView)
     }
 
     private fun fetchSearchResultSegment(
@@ -83,22 +83,28 @@ class SearchFlightInfoFragmentItem : Fragment(R.layout.search_result_flight_info
 
         val converter = LocalDateConverter()
         val departureDateString =
-            converter.fromEpochDayToStringDate(segmentDepartureTime)
-        val destDateString = converter.fromEpochDayToStringDate(destinationTimeEpochSeconds)
+            converter.fromEpochSecondsStringDate(segmentDepartureTime)
+        val destDateString = converter.fromEpochSecondsStringDate(destinationTimeEpochSeconds)
+        val flightTimeString = converter.fromEpochSecondToTimeString(curFlightTime)
 
         return SearchResultSegment(
-            flightNumber = currentSegment.flightNumber,
-            departureDate = departureDateString,
-            destinationDate = destDateString,
-            departureAirport = depAirportString,
-            destinationAirport = destAirportString,
-            price = currentSegment.price
+            currentSegment.flightNumber,
+            departureDateString,
+            destDateString,
+            depAirportString,
+            destAirportString,
+            currentSegment.price,
+            flightTimeString
         )
     }
 
     @SuppressLint("SetTextI18n")
     private fun displaySearchResultSegment(details: SearchResultSegment) {
-        flightNumberTextView.text = "Номер рейса - ${details.flightNumber}"
+        val flightNumber = "Номер рейса - ${details.flightNumber}"
+        val flightPrice = "Цена: ${details.price} у.е."
+        val flightTIme = "Время в пути: ${details.flightTime}"
+
+        flightNumberTextView.text = flightNumber
 
         departureTimeTextView.text = details.departureDate
         destinationTimeTextView.text = details.destinationDate
@@ -106,6 +112,6 @@ class SearchFlightInfoFragmentItem : Fragment(R.layout.search_result_flight_info
         departureAirportTextView.text = details.departureAirport
         destinationAirportTextView.text = details.destinationAirport
 
-        priceTextView.text = "${details.price} у.е."
+        flightSummaryTextView.text = "$flightPrice\n$flightTIme"
     }
 }

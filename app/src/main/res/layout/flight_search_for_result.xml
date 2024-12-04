@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_gray"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/flightSearchForResultEditText"
+        style="@style/CommonTextViewStyle"
+        android:layout_width="match_parent"
+        android:drawablePadding="8dp"
+        android:elevation="2dp"
+        android:gravity="start"
+        android:hint="Введите название аэропорта"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:padding="12dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/flightSearchForResultRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp" />
+</LinearLayout>

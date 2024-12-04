@@ -6,5 +6,6 @@ data class SearchResultSegment(
     val destinationDate: String,
     val departureAirport: String,
     val destinationAirport: String,
-    val price: Double
+    val price: Double,
+    val flightTime: String
 )

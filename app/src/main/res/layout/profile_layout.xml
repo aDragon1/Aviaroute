@@ -3,37 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Профиль -->
     <include
         layout="@layout/user_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp" />
 
-    <!-- Заголовок -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
+        style="@style/HeaderTextViewStyle"
         android:text="Ближайший рейс:"
-        android:textColor="@color/textPrimary"
-        android:textSize="20sp"
         tools:ignore="HardcodedText" />
 
-    <!-- Информация о рейсе -->
+    <TextView
+        android:id="@+id/noFlightIsAddedTextView"
+        style="@style/CommonTextViewStyle"
+        android:layout_marginStart="20dp"
+        android:text="Не добавлено ни одного рейса"
+        android:textSize="16sp"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
     <include
         android:id="@+id/flightListItemInclude"
-        layout="@layout/flight_list_item"
+        layout="@layout/purchased_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp" />
 
-    <!-- Кнопка истории покупок -->
+
     <Button
         android:id="@+id/purchaseHistoryButton"
         android:layout_width="match_parent"

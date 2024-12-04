@@ -14,3 +14,4 @@ interface FlightsDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(flight: Flight)
 }
+

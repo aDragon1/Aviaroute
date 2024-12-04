@@ -1,9 +1,12 @@
 package self.adragon.aviaroute.utils
 
+import android.util.Log
 import self.adragon.aviaroute.data.model.Airport
 import self.adragon.aviaroute.data.model.Flight
 import self.adragon.aviaroute.data.model.Segment
+import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import java.time.LocalDate
+import java.time.ZoneId
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -23,8 +26,9 @@ class Generator {
     private val minPrice = 1f
     private val maxPrice = 100f
 
-    private val minDate = LocalDate.now()
-    private val maxDate = LocalDate.of(2026, 1, 1)
+    private val zoneID = ZoneId.systemDefault()
+    private val minDate = LocalDate.now().atStartOfDay(zoneID).toEpochSecond()
+    private val maxDate = LocalDate.of(2025, 1, 1).atStartOfDay(zoneID).toEpochSecond()
 
     // Seconds in _
     private val SECOND = 1
@@ -84,26 +88,17 @@ class Generator {
             val segmentsSize = (1..maxSegmentsPerFlight).random()
             val flightSegments = takeSequentialSegments(segments, segmentsSize)
 
-            val departureDate = generateRandomDate()
+            val departureDateEpochSeconds = (minDate..maxDate).random()
 
-            val epochSeconds = departureDate.toEpochDay() * DAY
             flightSegments.mapIndexed { segPosition, segIndex ->
-                Flight(flightIndex, segIndex, segPosition + 1, epochSeconds)
+                Flight(flightIndex, segIndex, segPosition + 1, departureDateEpochSeconds)
             }
         }
-
 
         val resultFlights = mutableListOf<Flight>()
         flights.forEach { resultFlights.addAll(it) }
 
         return Triple(airports, segments, resultFlights)
-    }
-
-    private fun generateRandomDate(): LocalDate {
-        val minDay = minDate.toEpochDay()
-        val maxDay = maxDate.toEpochDay()
-
-        return LocalDate.ofEpochDay((minDay..maxDay).random())
     }
 
     private fun Double.round() = (this * 100).roundToInt() / 100.toDouble()

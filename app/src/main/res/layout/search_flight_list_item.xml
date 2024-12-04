@@ -1,0 +1,76 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flightCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="2dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="2dp"
+    android:padding="16dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/countTransfer"
+                style="@style/CommonTextViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:text="count transfer" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <TextView
+                    android:id="@+id/departureDateTextView"
+                    style="@style/CommonTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:text="departure date" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/arrow_right_drawable" />
+
+                <TextView
+                    android:id="@+id/destinationDateTextView"
+                    style="@style/CommonTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:text="destination date" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/flightSummaryTextView"
+            style="@style/CommonTextViewStyle"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="price" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

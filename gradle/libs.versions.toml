@@ -12,6 +12,13 @@ material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
 roomVersion = "2.6.1"
+workRuntimeKtx = "2.10.0"
+
+androidGradlePlugin = "8.6.1"
+kotlinGradlePlugin = "2.0.0"
+kotlinSerializationGradlePlugin = "2.0.21"
+roomGradlePlugin = "2.6.1"
+kspGradlePlugin = "2.0.21-1.0.27"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -19,6 +26,7 @@ androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -32,3 +40,8 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationGradlePlugin" }
+androidx-room = { id = "androidx.room", version.ref = "roomGradlePlugin" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "kspGradlePlugin" }

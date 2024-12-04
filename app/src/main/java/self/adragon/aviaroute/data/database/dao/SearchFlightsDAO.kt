@@ -1,8 +1,9 @@
 package self.adragon.aviaroute.data.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+import self.adragon.aviaroute.data.model.enums.SortOrder
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 
 @Dao
@@ -48,11 +49,24 @@ interface SearchFlightsDAO {
                 "(:departureAirportIndex = :errValue OR " +
                 "       departureAirport.airportIndex = :departureAirportIndex) " +
                 " AND (:destinationAirportIndex = :errValue OR " +
-                "       destinationAirport.airportIndex = :destinationAirportIndex) "
+                "       destinationAirport.airportIndex = :destinationAirportIndex) " +
+                " AND (:departureDateEpochSeconds = :errValue OR " +
+                "       departureDateEpoch >= :departureDateEpochSeconds) " +
+
+                "ORDER BY " +
+                "CASE " +
+                "WHEN :order = 'DEFAULT' THEN fb.flightIndex " +
+                "WHEN :order = 'PRICE_UP' THEN fb.totalPrice " +
+                "WHEN :order = 'DATE_UP' THEN firstSegFlight.departureDateEpochSeconds " +
+                "END ASC, " +
+
+                "CASE " +
+                "WHEN :order = 'PRICE_DOWN' THEN fb.totalPrice " +
+                "WHEN :order = 'DATE_DOWN' THEN firstSegFlight.departureDateEpochSeconds " +
+                "END DESC"
     )
     fun getSearchedFlights(
-        departureAirportIndex: Int,
-        destinationAirportIndex: Int,
-        errValue: Int
-    ): LiveData<List<SearchResultFlight>>
+        departureAirportIndex: Int, destinationAirportIndex: Int, departureDateEpochSeconds: Long,
+        order: SortOrder, errValue: Int
+    ): Flow<List<SearchResultFlight>>
 }

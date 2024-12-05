@@ -17,16 +17,21 @@ import self.adragon.aviaroute.data.model.enums.SortOrder
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 import self.adragon.aviaroute.data.repo.SearchFlightRepository
 
-class SearchResulViewModel(private val application: Application) : AndroidViewModel(application) {
+class SearchResulViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mediatorLiveData: MediatorLiveData<List<SearchResultFlight>> = MediatorLiveData()
     val searchResult: MutableLiveData<List<SearchResultFlight>> get() = mediatorLiveData
 
-    var sortOrder: MutableLiveData<SortOrder> = MutableLiveData(SortOrder.DEFAULT)
+    var sortOrder: MutableLiveData<SortOrder> = MutableLiveData(SortOrder.DATE_UP)
 
     private val errorValue = -1
 
+    private val searchFlightsRepository: SearchFlightRepository
+
     init {
+        val db: FlightsDatabase = FlightsDatabase.getDatabase(application)
+        searchFlightsRepository = SearchFlightRepository(db.searchFlightsDAO())
+
         mediatorLiveData.addSource(sortOrder) {
             Log.d("mytag", "Sort order changed")
             viewModelScope.launch { getSearchResult() }
@@ -52,11 +57,12 @@ class SearchResulViewModel(private val application: Application) : AndroidViewMo
     private fun getSearchResult() = CoroutineScope(Dispatchers.IO).launch {
         searchResult.postValue(emptyList())
 
-        val db: FlightsDatabase = FlightsDatabase.getDatabase(application)
-        val searchFlightsRepository = SearchFlightRepository(db.searchFlightsDAO())
-
         val searchResultFlightsFlow = searchFlightsRepository.getSearchedFlights(
-            lastDepAirportIndex, lastDestAirportIndex,departureDateEpochSeconds, sortOrder.value!!, errorValue
+            lastDepAirportIndex,
+            lastDestAirportIndex,
+            departureDateEpochSeconds,
+            sortOrder.value!!,
+            errorValue
         )
 
         searchResultFlightsFlow.onEach {
@@ -65,6 +71,15 @@ class SearchResulViewModel(private val application: Application) : AndroidViewMo
             searchResult.postValue(currentList)
         }.catch { e -> Log.e("mytag", e.message ?: "") }.collect()
     }
+
+    fun getClosestDate(
+        departureAirportIndex: Int, destinationAirportIndex: Int,
+        epochSeconds: Long
+    ) = searchFlightsRepository.getClosestDate(
+        departureAirportIndex, destinationAirportIndex,
+        epochSeconds, errorValue
+    )
+
 
     fun setSortOrder(order: SortOrder): Boolean {
         if (sortOrder.value != order) {

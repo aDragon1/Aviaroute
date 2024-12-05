@@ -1,8 +1,11 @@
 package self.adragon.aviaroute.ui.fragments.buyTicketBranch
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -10,6 +13,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
@@ -33,7 +40,7 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
 
     private lateinit var flightSearchResultRecyclerView: RecyclerView
 
-    private lateinit var clicked:SearchResultFlight
+    private lateinit var clicked: SearchResultFlight
 
     private val searchResultViewModel: SearchResulViewModel by activityViewModels()
 
@@ -63,6 +70,25 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
         val destinationAirport = arguments?.getString("destinationAirport") ?: ""
 
         searchResultViewModel.searchResult.observe(viewLifecycleOwner) { lst ->
+
+            // TODO refactor it somehow later
+//            val currentDateList = lst.filter { it.departureDateEpoch == departureDateEpochSeconds }
+//            if (currentDateList.isEmpty()) {
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    val closestDate = searchResultViewModel.getClosestDate(
+//                        departureIndex, destinationIndex, departureDateEpochSeconds
+//                    )
+//
+//                    withContext(Dispatchers.Main) {
+//                        val closestDateString =
+//                            LocalDateConverter().fromEpochSecondsStringDate(closestDate)
+//                        createDialog(closestDateString)
+//                        Log.d("mytag", "cur date size = 0 , overall size - ${lst.size}")
+//                    }
+//                }
+//                return@observe
+//            }
+
             val size = lst.size
             val codes = lst.firstOrNull()?.flightAirportCodes ?: emptyList()
 
@@ -119,6 +145,19 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
         flightSearchInfDateTextView.text = dateMessage
         flightSearchInfoFoundTextView.text = foundMessage
     }
+
+    private fun createDialog(date: String) =
+        AlertDialog.Builder(requireContext())
+            .setMessage("Билетов на выбранную дату нет, есть билеты на $date")
+            .setPositiveButton("Yeap") { dialogInterface: DialogInterface, i: Int ->
+                Log.d("mytag", "yeap")
+            }
+            .setNegativeButton("Nope") { dialogInterface: DialogInterface, i: Int ->
+                Log.d("mytag", "nope")
+            }
+            .create()
+            .show()
+
 
     private fun startDialog() {
         val frag = SearchFlightInfo(clicked)

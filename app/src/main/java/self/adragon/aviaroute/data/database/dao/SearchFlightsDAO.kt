@@ -9,6 +9,8 @@ import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 @Dao
 interface SearchFlightsDAO {
 
+
+    // TODO Set flight departure date not equals to selected date, but in range of 24 hours
     @Query(
         "WITH FlightBounds AS (     " +
                 "     SELECT      " +
@@ -50,8 +52,7 @@ interface SearchFlightsDAO {
                 "       departureAirport.airportIndex = :departureAirportIndex) " +
                 " AND (:destinationAirportIndex = :errValue OR " +
                 "       destinationAirport.airportIndex = :destinationAirportIndex) " +
-                " AND (:departureDateEpochSeconds = :errValue OR " +
-                "       departureDateEpoch >= :departureDateEpochSeconds) " +
+                " AND departureDateEpoch >= :departureDateEpochSeconds " +
 
                 "ORDER BY " +
                 "CASE " +
@@ -69,4 +70,48 @@ interface SearchFlightsDAO {
         departureAirportIndex: Int, destinationAirportIndex: Int, departureDateEpochSeconds: Long,
         order: SortOrder, errValue: Int
     ): Flow<List<SearchResultFlight>>
+
+
+    @Query(
+        "WITH FlightBounds AS (     " +
+                "     SELECT      " +
+                "         f.flightIndex,     " +
+                "         MIN(f.segmentPosition) AS firstSegmentPosition,     " +
+                "         MAX(f.segmentPosition) AS lastSegmentPosition,     " +
+                "         SUM(s.price) AS totalPrice,     " +
+                "         SUM(s.flightTimeEpochSeconds) as totalTime,      " +
+                "     GROUP_CONCAT(s.segmentIndex, ', ') AS allSegments, " +
+                "     GROUP_CONCAT(a.code, ', ') AS allCodes  " +
+                "     FROM      " +
+                "         flights f     " +
+                "     JOIN segments s ON f.segmentIndex = s.segmentIndex    " +
+                " JOIN airports a on a.airportIndex = s.destinationIndex " +
+                "     GROUP BY      " +
+                "         f.flightIndex     " +
+                " )     " +
+                " SELECT min(firstSegFlight.departureDateEpochSeconds) from FlightBounds fb " +
+
+                " JOIN flights firstSegFlight ON firstSegFlight.flightIndex = fb.flightIndex  " +
+                "                             AND firstSegFlight.segmentPosition = fb.firstSegmentPosition     " +
+                " JOIN segments s1 on firstSegFlight.segmentIndex = s1.segmentIndex    " +
+                " JOIN airports departureAirport on s1.departureIndex = departureAirport.airportIndex    " +
+
+                " JOIN flights lastSegFlight ON lastSegFlight.flightIndex = fb.flightIndex  " +
+                "                            AND lastSegFlight.segmentPosition = fb.lastSegmentPosition     " +
+                " JOIN segments s2 on lastSegFlight.segmentIndex = s2.segmentIndex       " +
+                " JOIN airports destinationAirport on destinationAirport.airportIndex = s2.destinationIndex  " +
+
+                " WHERE " +
+                "(:departureAirportIndex = :errValue OR " +
+                "       departureAirport.airportIndex = :departureAirportIndex) " +
+                " AND (:destinationAirportIndex = :errValue OR " +
+                "       destinationAirport.airportIndex = :destinationAirportIndex) " +
+                " AND firstSegFlight.departureDateEpochSeconds > :departureDateEpochSeconds "
+    )
+    fun getClosestDate(
+        departureAirportIndex: Int,
+        destinationAirportIndex: Int,
+        departureDateEpochSeconds: Long,
+        errValue: Int
+    ): Long
 }

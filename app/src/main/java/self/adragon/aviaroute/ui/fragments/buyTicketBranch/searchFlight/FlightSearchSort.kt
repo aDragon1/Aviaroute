@@ -36,26 +36,24 @@ class FlightSearchSort : DialogFragment(R.layout.search_params_sort) {
         radioButtons.forEach { radioGroup.addView(it) }
 
         val index = when (searchResultViewModel.sortOrder.value) {
-            SortOrder.DEFAULT -> 0
-            SortOrder.PRICE_UP -> 1
-            SortOrder.PRICE_DOWN -> 2
-            SortOrder.DATE_UP -> 3
-            SortOrder.DATE_DOWN -> 4
+            SortOrder.PRICE_UP -> 0
+            SortOrder.PRICE_DOWN -> 1
+            SortOrder.DATE_UP -> 2
+            SortOrder.DATE_DOWN -> 3
 
-            else -> 0
+            else -> 3
         }
         radioButtons[index].isChecked = true
 
         radioGroup.setOnCheckedChangeListener { group: RadioGroup, checkedID: Int ->
             val button = group.findViewById<RadioButton>(checkedID)
             val order = when (radioButtons.indexOf(button)) {
-                0 -> SortOrder.DEFAULT
-                1 -> SortOrder.PRICE_UP
-                2 -> SortOrder.PRICE_DOWN
-                3 -> SortOrder.DATE_UP
-                4 -> SortOrder.DATE_DOWN
+                0 -> SortOrder.PRICE_UP
+                1 -> SortOrder.PRICE_DOWN
+                2 -> SortOrder.DATE_UP
+                3 -> SortOrder.DATE_DOWN
 
-                else -> SortOrder.DEFAULT
+                else -> SortOrder.DATE_DOWN
             }
 
             val result = searchResultViewModel.setSortOrder(order)

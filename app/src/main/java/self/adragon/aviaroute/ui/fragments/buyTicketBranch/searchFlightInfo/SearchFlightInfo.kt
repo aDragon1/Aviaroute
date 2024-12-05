@@ -5,7 +5,9 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import android.view.View.OnClickListener
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -20,7 +22,14 @@ import self.adragon.aviaroute.ui.viewmodels.PurchasedViewModel
 import kotlin.math.roundToInt
 
 class SearchFlightInfo(private val flight: SearchResultFlight) :
-    DialogFragment(R.layout.search_result_flight_info) {
+    DialogFragment(R.layout.search_result_flight_info), OnClickListener {
+
+    private lateinit var backImageButton: ImageButton
+    private lateinit var buyButton: Button
+    private lateinit var totalFlightTimeTextView: TextView
+    private lateinit var totalPriceTextView: TextView
+
+    private lateinit var container: LinearLayout
 
     private val purchasedViewModel: PurchasedViewModel by activityViewModels()
 
@@ -31,15 +40,9 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val container =
-            view.findViewById<LinearLayout>(R.id.searchResultFlightInfoFragmentContainer)
-        val buyButton = view.findViewById<Button>(R.id.buyButton)
-        val totalFlightTimeTextView = view.findViewById<TextView>(R.id.totalFlightTimeTextView)
-        val totalPriceTextView = view.findViewById<TextView>(R.id.totalPriceTextView)
+        initViews(view)
 
         buyButton.text = "Выбрать за ${flight.totalPrice.round()} у.е"
-
-        flight.flightAirportCodes
         flight.flightSegments.forEachIndexed { i, _ ->
             // All segments from first to current
             val segmentsIndexesIncludeCurrent = flight.flightSegments.slice(0..i).toIntArray()
@@ -61,41 +64,20 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
                 .fromEpochSecondToTimeString(destinationDateEpoch - departureDateEpoch)
 
             totalFlightTimeTextView.text = "Общее время перелёта - $totalFlightTimeStr"
-            totalPriceTextView.text = "Общая цена билета - ${flight.totalPrice}"
+            totalPriceTextView.text = "Общая цена билета - ${flight.totalPrice.round()} у.е."
         }
+    }
 
-        buyButton.setOnClickListener {
-            val departure = flight.flightAirportCodes.first()
-            val destination = flight.flightAirportCodes.last()
-            val totalPrice = flight.totalPrice
+    private fun initViews(view: View) {
+        container = view.findViewById(R.id.searchResultFlightInfoFragmentContainer)
 
-            val titleText: String
-            val messageText: String
+        backImageButton = view.findViewById(R.id.backImageButton)
+        buyButton = view.findViewById(R.id.buyButton)
+        totalFlightTimeTextView = view.findViewById(R.id.totalFlightTimeTextView)
+        totalPriceTextView = view.findViewById(R.id.totalPriceTextView)
 
-            if (purchasedViewModel.purchasedLiveData.value?.any { it.flightIndex == flight.flightIndex } == true) {
-                titleText = "Повторная покупка билета"
-                messageText =
-                    "Вы уверены, что хотите повторно купить билет из $departure в $destination за $totalPrice?"
-            } else {
-                titleText = "Покупка билета"
-                messageText =
-                    "Вы уверены, что хотите купить билет из $departure в $destination за $totalPrice?"
-            }
-
-            AlertDialog.Builder(requireContext())
-                .setTitle(titleText)
-                .setMessage(messageText)
-                .setPositiveButton("Да") { _, _ ->
-                    insert(flight)
-
-                    val message = "Билет из $departure в $destination был куплен"
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-
-                    dismiss()
-                }
-                .setNegativeButton("Нет") { _, _ -> }
-                .show()
-        }
+        buyButton.setOnClickListener(this)
+        backImageButton.setOnClickListener(this)
     }
 
     private fun insert(clicked: SearchResultFlight) {
@@ -108,6 +90,42 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
 //        )
     }
 
-    private fun Double.round() = (this * 100).roundToInt() / 100.toDouble()
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.buyButton -> {
+                val departure = flight.flightAirportCodes.first()
+                val destination = flight.flightAirportCodes.last()
+                val totalPrice = flight.totalPrice.round()
 
+                val cond = purchasedViewModel.purchasedLiveData.value
+                    ?.any { it.flightIndex == flight.flightIndex } == true
+
+                val (titleText, messageText) = if (cond) {
+                    "Повторная покупка билета" to
+                            "Вы уверены, что хотите повторно купить билет из $departure в $destination за $totalPrice?"
+                } else {
+                    "Покупка билета" to
+                            "Вы уверены, что хотите купить билет из $departure в $destination за $totalPrice?"
+                }
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle(titleText)
+                    .setMessage(messageText)
+                    .setPositiveButton("Да") { _, _ ->
+                        insert(flight)
+
+                        val message = "Билет из $departure в $destination был куплен"
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                        dismiss()
+                    }
+                    .setNegativeButton("Нет") { _, _ -> }
+                    .show()
+            }
+
+            R.id.backImageButton -> dismiss()
+        }
+    }
+
+    private fun Double.round() = (this * 100).roundToInt() / 100.toDouble()
 }

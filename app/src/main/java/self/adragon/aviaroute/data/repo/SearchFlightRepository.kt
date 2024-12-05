@@ -9,6 +9,13 @@ class SearchFlightRepository(private val searchFlightsDAO: SearchFlightsDAO) {
         departureAirportIndex: Int, destinationAirportIndex: Int, departureDateEpochSeconds: Long,
         order: SortOrder, errValue: Int
     ) = searchFlightsDAO.getSearchedFlights(
-        departureAirportIndex, destinationAirportIndex,departureDateEpochSeconds, order, errValue
+        departureAirportIndex, destinationAirportIndex, departureDateEpochSeconds, order, errValue
+    )
+
+    fun getClosestDate(
+        departureAirportIndex: Int, destinationAirportIndex: Int, departureDateEpochSeconds: Long,
+        errValue: Int
+    ) = searchFlightsDAO.getClosestDate(
+        departureAirportIndex, destinationAirportIndex, departureDateEpochSeconds, errValue
     )
 }

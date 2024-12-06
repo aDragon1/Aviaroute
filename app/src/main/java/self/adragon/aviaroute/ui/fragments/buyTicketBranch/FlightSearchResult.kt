@@ -1,12 +1,11 @@
 package self.adragon.aviaroute.ui.fragments.buyTicketBranch
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -40,7 +39,14 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
 
     private lateinit var flightSearchResultRecyclerView: RecyclerView
 
+    private lateinit var dialogInclude: View
+    private lateinit var emptyListMessageTextView: TextView
+    private lateinit var emptyListPastButton: Button
+    private lateinit var emptyListFutureButton: Button
+
     private lateinit var clicked: SearchResultFlight
+
+    private val localDateConverter = LocalDateConverter()
 
     private val searchResultViewModel: SearchResulViewModel by activityViewModels()
 
@@ -55,48 +61,34 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
 
         val adapter = FlightRecyclerViewAdapter { clickedItem ->
             clicked = clickedItem
-            startDialog()
+            val frag = SearchFlightInfo(clicked)
+            frag.show(childFragmentManager, "SEARCH_INFO_DIALOG_TAG")
         }
         flightSearchResultRecyclerView.adapter = adapter
 
         val departureIndex = arguments?.getInt("departureIndex", -1) ?: -1
         val destinationIndex = arguments?.getInt("destinationIndex", -1) ?: -1
-        val departureDateEpochSeconds = arguments?.getLong("departureDateEpochSeconds", -1L) ?: -1L
-        searchResultViewModel.setSearchResult(
-            departureIndex, destinationIndex, departureDateEpochSeconds
-        )
+        val depEpochSeconds = arguments?.getLong("departureDateEpochSeconds", -1L) ?: -1L
+
+        searchResultViewModel.setSearchResult(departureIndex, destinationIndex, depEpochSeconds)
 
         val departureAirport = arguments?.getString("departureAirport") ?: ""
         val destinationAirport = arguments?.getString("destinationAirport") ?: ""
 
         searchResultViewModel.searchResult.observe(viewLifecycleOwner) { lst ->
-
-            // TODO refactor it somehow later
-//            val currentDateList = lst.filter { it.departureDateEpoch == departureDateEpochSeconds }
-//            if (currentDateList.isEmpty()) {
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    val closestDate = searchResultViewModel.getClosestDate(
-//                        departureIndex, destinationIndex, departureDateEpochSeconds
-//                    )
-//
-//                    withContext(Dispatchers.Main) {
-//                        val closestDateString =
-//                            LocalDateConverter().fromEpochSecondsStringDate(closestDate)
-//                        createDialog(closestDateString)
-//                        Log.d("mytag", "cur date size = 0 , overall size - ${lst.size}")
-//                    }
-//                }
-//                return@observe
-//            }
-
+            val epochSeconds = searchResultViewModel.departureDateEpochSeconds
             val size = lst.size
-            val codes = lst.firstOrNull()?.flightAirportCodes ?: emptyList()
 
-            setTextViewsText(
-                size, codes, departureAirport, destinationAirport, departureDateEpochSeconds
-            )
+            dialogInclude.visibility = View.GONE
+            setTextViewsText(size, departureAirport, destinationAirport, epochSeconds)
+
             adapter.fillData(lst)
             flightSearchResultRecyclerView.adapter = adapter
+
+            if (size == 0) {
+                handleEmptyList(departureIndex, destinationIndex, epochSeconds)
+                dialogInclude.visibility = View.VISIBLE
+            }
         }
 
         backImageButton.setOnClickListener {
@@ -123,19 +115,33 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
 
         flightSearchResultRecyclerView = view.findViewById(R.id.flightSearchResultRecyclerView)
         flightSearchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        initEmptyListVies(view)
+    }
+
+    private fun initEmptyListVies(view: View) {
+        dialogInclude = view.findViewById(R.id.dialogInclude)
+        emptyListMessageTextView =
+            dialogInclude.findViewById(R.id.emptyListMessageTextView)
+        emptyListPastButton =
+            dialogInclude.findViewById(R.id.emptyListPastButton)
+        emptyListFutureButton =
+            dialogInclude.findViewById(R.id.emptyListFutureButton)
     }
 
     private fun setTextViewsText(
-        size: Int, codes: List<String>,
-        departureAirport: String, destinationAirport: String,
-        epochSeconds: Long
+        size: Int, departureAirport: String,
+        destinationAirport: String, epochSeconds: Long
     ) {
-        val codesMessage =
-            if (codes.isEmpty()) "" else "${codes.firstOrNull()} → ${codes.lastOrNull()}"
+        val codesMessage = if (departureAirport.isNotEmpty()) {
+            val departureCode = departureAirport.split(", ")[1]
+            val destinationCode = destinationAirport.split(", ")[1]
+            "$departureCode → $destinationCode"
+        } else ""
         val departureMessage = "Откуда: $departureAirport"
         val destinationMessage = "Куда: $destinationAirport"
         val dateMessage = "Дата вылета: " +
-                LocalDateConverter().fromEpochSecondsStringDate(epochSeconds)
+                localDateConverter.fromEpochSecondsStringDate(epochSeconds)
         val foundMessage = "\nНайдено билетов: $size"
 
         flightSearchInfoCodesTextView.text = codesMessage
@@ -146,21 +152,68 @@ class FlightSearchResult : DialogFragment(R.layout.flight_search_result) {
         flightSearchInfoFoundTextView.text = foundMessage
     }
 
-    private fun createDialog(date: String) =
-        AlertDialog.Builder(requireContext())
-            .setMessage("Билетов на выбранную дату нет, есть билеты на $date")
-            .setPositiveButton("Yeap") { dialogInterface: DialogInterface, i: Int ->
-                Log.d("mytag", "yeap")
-            }
-            .setNegativeButton("Nope") { dialogInterface: DialogInterface, i: Int ->
-                Log.d("mytag", "nope")
-            }
-            .create()
-            .show()
+    private fun getEmptyListMessage(past: Long?, future: Long?) =
+        when {
+            past == null && future == null -> "Билетов по этому направлению не найдено"
+            past == null || future == null -> "Билетов на выбранную дату не найдено"
+            else -> "Билетов на выбранную дату не найдено"
+        }
 
 
-    private fun startDialog() {
-        val frag = SearchFlightInfo(clicked)
-        frag.show(childFragmentManager, "SEARCH_INFO_DIALOG_TAG")
+    private fun handleEmptyList(
+        departureIndex: Int,
+        destinationIndex: Int,
+        epochSeconds: Long
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val (past, future) = searchResultViewModel.getClosestDate(
+                departureIndex, destinationIndex, epochSeconds
+            )
+
+            val message = getEmptyListMessage(past, future)
+            withContext(Dispatchers.Main) {
+                updateEmptyListUI(message, past, future, departureIndex, destinationIndex)
+            }
+        }
+    }
+
+
+    private fun updateEmptyListUI(
+        message: String,
+        past: Long?,
+        future: Long?,
+        departureIndex: Int,
+        destinationIndex: Int
+    ) {
+        emptyListMessageTextView.text = message
+
+        val converter = LocalDateConverter()
+        val pastString = converter.fromEpochSecondsStringDate(past)
+        val futureString = converter.fromEpochSecondsStringDate(future)
+
+        emptyListPastButton.apply {
+            visibility = if (past == null) View.GONE else View.VISIBLE
+            text = pastString
+            past?.let {
+                setOnClickListener { _ ->
+                    searchResultViewModel.setSearchResult(departureIndex, destinationIndex, it)
+                }
+            }
+        }
+
+        emptyListFutureButton.apply {
+            visibility = if (future == null) View.GONE else View.VISIBLE
+            text = futureString
+            setOnClickListener {
+                future?.let {
+                    searchResultViewModel.setSearchResult(departureIndex, destinationIndex, it)
+                }
+            }
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        searchResultViewModel.clear()
     }
 }

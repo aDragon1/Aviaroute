@@ -83,8 +83,8 @@ class SearchFlightInfoItem : Fragment(R.layout.search_result_flight_info_item) {
 
         val converter = LocalDateConverter()
         val departureDateString =
-            converter.fromEpochSecondsStringDate(segmentDepartureTime)
-        val destDateString = converter.fromEpochSecondsStringDate(destinationTimeEpochSeconds)
+            converter.fromEpochSecondsStringDateTime(segmentDepartureTime)
+        val destDateString = converter.fromEpochSecondsStringDateTime(destinationTimeEpochSeconds)
         val flightTimeString = converter.fromEpochSecondToTimeString(curFlightTime)
 
         return SearchResultSegment(

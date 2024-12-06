@@ -5,7 +5,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class LocalDateConverter {
-    fun fromEpochSecondsStringDate(epochSeconds: Long): String {
+    fun fromEpochSecondsStringDate(epochSeconds: Long?): String =
+        fromEpochSecondsStringDateTime(epochSeconds).split(',').first()
+
+    fun fromEpochSecondsStringDateTime(epochSeconds: Long?): String {
+        if (epochSeconds == null) return ""
         val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")
 
         val instantOfEpoch = Instant.ofEpochSecond(epochSeconds)
@@ -14,7 +18,9 @@ class LocalDateConverter {
         return instantAsLocalDateTime.format(formatter)
     }
 
-    fun fromEpochSecondToTimeString(epochSeconds: Long): String {
+    fun fromEpochSecondToTimeString(epochSeconds: Long?): String {
+        if (epochSeconds == null) return ""
+
         val secondsInMinute = 60
         val secondsInHour = secondsInMinute * 60
         val secondsInDay = secondsInHour * 24
@@ -33,5 +39,15 @@ class LocalDateConverter {
         val secondsStr = if (seconds > 0) "$seconds с." else ""
 
         return dayStr + hoursStr + minutesStr + secondsStr
+    }
+
+    fun getDayRange(epochSeconds: Long): Pair<Long, Long> {
+        val offset = ZoneId.systemDefault()
+
+        val date = Instant.ofEpochSecond(epochSeconds).atZone(offset).toLocalDate()
+        val startOfDay = date.atStartOfDay(offset).toEpochSecond()
+        val endOfDay = startOfDay + 86400 - 1
+
+        return startOfDay to endOfDay
     }
 }

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,8 @@ import self.adragon.aviaroute.ui.adapters.FlightSearchForResultRVAdapter
 class FlightSearchForResult(private val onItemSelect: (String, Int) -> Unit) :
     DialogFragment(R.layout.flight_search_for_result) {
 
+    private lateinit var backImageButton: ImageButton
+    private lateinit var flightSearchForResultRecyclerView: RecyclerView
     private lateinit var airportRepository: AirportRepository
     private var airportNames: List<Pair<String, Int>> = emptyList()
 
@@ -32,9 +35,9 @@ class FlightSearchForResult(private val onItemSelect: (String, Int) -> Unit) :
         val db = FlightsDatabase.getDatabase(requireContext())
         airportRepository = AirportRepository(db.airportsDAO())
 
-
-        val flightSearchForResultRecyclerView =
-            view.findViewById<RecyclerView>(R.id.flightSearchForResultRecyclerView)
+        backImageButton = view.findViewById(R.id.backImageButton)
+        flightSearchForResultRecyclerView =
+            view.findViewById(R.id.flightSearchForResultRecyclerView)
         flightSearchForResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = FlightSearchForResultRVAdapter { name, index ->
@@ -62,5 +65,6 @@ class FlightSearchForResult(private val onItemSelect: (String, Int) -> Unit) :
                 flightSearchForResultRecyclerView.adapter = adapter
             }
         }
+        backImageButton.setOnClickListener { dismiss() }
     }
 }

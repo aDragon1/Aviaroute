@@ -40,9 +40,6 @@ class PickDate(private val onDatePick: (Long) -> Unit) : Fragment(R.layout.date_
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-            val epochSeconds = calendar.timeInMillis / 1000
-
-            Log.d("mytag", "Epoch seconds - $epochSeconds")
             val datePickerDialog = DatePickerDialog(
                 requireContext(), onDateSetListener, year, month, day
             )

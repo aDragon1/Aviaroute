@@ -24,7 +24,7 @@ data class SearchResultFlight(
     init {
         val converter = LocalDateConverter()
 
-        departureDateString = converter.fromEpochSecondsStringDate(departureDateEpoch)
-        destinationDateString = converter.fromEpochSecondsStringDate(destinationDateEpoch)
+        departureDateString = converter.fromEpochSecondsStringDateTime(departureDateEpoch)
+        destinationDateString = converter.fromEpochSecondsStringDateTime(destinationDateEpoch)
     }
 }

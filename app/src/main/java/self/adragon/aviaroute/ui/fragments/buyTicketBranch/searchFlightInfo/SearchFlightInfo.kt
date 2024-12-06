@@ -113,7 +113,6 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
                     .setMessage(messageText)
                     .setPositiveButton("Да") { _, _ ->
                         insert(flight)
-
                         val message = "Билет из $departure в $destination был куплен"
                         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 

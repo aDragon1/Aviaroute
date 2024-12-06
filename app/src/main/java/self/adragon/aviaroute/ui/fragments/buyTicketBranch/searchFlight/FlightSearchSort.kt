@@ -26,13 +26,12 @@ class FlightSearchSort : DialogFragment(R.layout.search_params_sort) {
         val radioGroup: RadioGroup = view.findViewById(R.id.radioGroup)
         val backImageButton: ImageButton = view.findViewById(R.id.backImageButton)
 
-        val b1 = createRadioButton("По умолчанию")
-        val b2 = createRadioButton("Цене ↑")
-        val b3 = createRadioButton("Цене ↓")
-        val b4 = createRadioButton("Дате ↑")
-        val b5 = createRadioButton("Дате ↓")
+        val b1 = createRadioButton("Цене ↑")
+        val b2 = createRadioButton("Цене ↓")
+        val b3 = createRadioButton("Дате ↑")
+        val b4 = createRadioButton("Дате ↓")
 
-        val radioButtons = listOf(b1, b2, b3, b4, b5)
+        val radioButtons = listOf(b1, b2, b3, b4)
         radioButtons.forEach { radioGroup.addView(it) }
 
         val index = when (searchResultViewModel.sortOrder.value) {
@@ -41,7 +40,7 @@ class FlightSearchSort : DialogFragment(R.layout.search_params_sort) {
             SortOrder.DATE_UP -> 2
             SortOrder.DATE_DOWN -> 3
 
-            else -> 3
+            else -> 2
         }
         radioButtons[index].isChecked = true
 

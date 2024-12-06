@@ -6,6 +6,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/backImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:importantForAccessibility="no"
+            android:src="@drawable/arrow_left_drawable" />
+    </androidx.appcompat.widget.Toolbar>
+
     <EditText
         android:id="@+id/flightSearchForResultEditText"
         style="@style/CommonTextViewStyle"

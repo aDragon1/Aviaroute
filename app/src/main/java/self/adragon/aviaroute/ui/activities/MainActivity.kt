@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -61,9 +62,11 @@ class MainActivity : AppCompatActivity() {
         if (!isDatabaseExist) {
             populateDatabase()
             setting.edit().putBoolean(APP_PREFERENCES_DATABASE_EXIST, true).apply()
+            Toast.makeText(
+                applicationContext, "База данных была успешно пересоздана", Toast.LENGTH_SHORT
+            ).show()
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun requestAllPerms() {

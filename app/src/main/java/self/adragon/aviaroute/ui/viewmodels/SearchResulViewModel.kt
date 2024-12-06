@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import self.adragon.aviaroute.data.database.FlightsDatabase
 import self.adragon.aviaroute.data.model.enums.SortOrder
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
+import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import self.adragon.aviaroute.data.repo.SearchFlightRepository
 
 class SearchResulViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,23 +33,16 @@ class SearchResulViewModel(application: Application) : AndroidViewModel(applicat
         val db: FlightsDatabase = FlightsDatabase.getDatabase(application)
         searchFlightsRepository = SearchFlightRepository(db.searchFlightsDAO())
 
-        mediatorLiveData.addSource(sortOrder) {
-            Log.d("mytag", "Sort order changed")
-            viewModelScope.launch { getSearchResult() }
-        }
+        mediatorLiveData.addSource(sortOrder) { viewModelScope.launch { getSearchResult() } }
     }
 
-    private var lastDepAirportIndex = -1
-    private var lastDestAirportIndex = -1
-    private var departureDateEpochSeconds = -1L
+    private var departureAirportIndex = -1
+    private var destinationAirportIndex = -1
+    var departureDateEpochSeconds = -1L
 
-    fun setSearchResult(
-        departureAirportIndex: Int,
-        destinationAirportIndex: Int,
-        epochSeconds: Long
-    ) {
-        lastDepAirportIndex = departureAirportIndex
-        lastDestAirportIndex = destinationAirportIndex
+    fun setSearchResult(departureIndex: Int, destinationIndex: Int, epochSeconds: Long) {
+        departureAirportIndex = departureIndex
+        destinationAirportIndex = destinationIndex
         departureDateEpochSeconds = epochSeconds
 
         getSearchResult()
@@ -57,12 +51,9 @@ class SearchResulViewModel(application: Application) : AndroidViewModel(applicat
     private fun getSearchResult() = CoroutineScope(Dispatchers.IO).launch {
         searchResult.postValue(emptyList())
 
+        val dayRange = LocalDateConverter().getDayRange(departureDateEpochSeconds)
         val searchResultFlightsFlow = searchFlightsRepository.getSearchedFlights(
-            lastDepAirportIndex,
-            lastDestAirportIndex,
-            departureDateEpochSeconds,
-            sortOrder.value!!,
-            errorValue
+            departureAirportIndex, destinationAirportIndex, dayRange, sortOrder.value!!, errorValue
         )
 
         searchResultFlightsFlow.onEach {
@@ -76,8 +67,7 @@ class SearchResulViewModel(application: Application) : AndroidViewModel(applicat
         departureAirportIndex: Int, destinationAirportIndex: Int,
         epochSeconds: Long
     ) = searchFlightsRepository.getClosestDate(
-        departureAirportIndex, destinationAirportIndex,
-        epochSeconds, errorValue
+        departureAirportIndex, destinationAirportIndex, epochSeconds, errorValue
     )
 
 
@@ -87,5 +77,13 @@ class SearchResulViewModel(application: Application) : AndroidViewModel(applicat
             return true
         }
         return false
+    }
+
+    fun clear() {
+        searchResult.postValue(emptyList())
+
+        departureAirportIndex = -1
+        destinationAirportIndex = -1
+        departureDateEpochSeconds = -1L
     }
 }

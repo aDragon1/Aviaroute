@@ -102,10 +102,6 @@ class FlightSearch : Fragment(R.layout.flight_search), OnClickListener {
             R.id.searchButton -> {
                 if (!handleValidateError()) return
 
-                Log.d(
-                    "mytag",
-                    "dep index - $departureIndex, \ndest index - $destinationIndex, departureDateEpochSeconds - $departureDateEpochSeconds"
-                )
                 val arg = Bundle().apply {
                     putInt("departureIndex", departureIndex)
                     putString("departureAirport", departureIncludeTextView.text.toString())

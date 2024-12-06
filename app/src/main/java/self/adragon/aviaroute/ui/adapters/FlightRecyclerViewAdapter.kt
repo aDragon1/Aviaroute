@@ -53,7 +53,7 @@ class FlightRecyclerViewAdapter(private val onClick: (SearchResultFlight) -> Any
 
             val message = when (segmentsSize) {
                 1 -> "Прямой"
-                2 -> "Трансфер"
+                2 -> "Транзит"
                 else -> "Количество пересадок - $segmentsSize"
             }
             countTransferTextView.text = message

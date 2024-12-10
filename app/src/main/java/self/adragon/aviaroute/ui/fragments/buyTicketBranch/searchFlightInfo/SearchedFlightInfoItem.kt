@@ -100,7 +100,7 @@ class SearchedFlightInfoItem : Fragment(R.layout.search_result_flight_info_item)
 
     @SuppressLint("SetTextI18n")
     private fun displaySearchResultSegment(details: SearchResultSegment) {
-        val flightNumber = "Номер рейса - ${details.flightNumber}"
+        val flightNumber =  ""//"Номер рейса - ${details.flightNumber}"
         val flightPrice = "Цена: ${details.price} у.е."
         val flightTIme = "Время в пути: ${details.flightTime}"
 

@@ -49,7 +49,7 @@ class SearchedFlightInfo(private val flight: SearchResultFlight) :
 
         initViews(view)
 
-        val codes = "->"
+        val codes = ""//"->"
         flightSearchInfoCodesTextView.text = codes
         buyButton.text = "Выбрать билет"
 

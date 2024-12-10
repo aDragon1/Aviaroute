@@ -20,17 +20,22 @@ Aviaroute is an Android application designed to search for and book flight ticke
 <!-- Screenshots -->
 ### :camera: Screenshots
 
-<div align="center"> 
-  <!-- <img src="https://placehold.co/600x400?text=Your+Screenshot+here" alt="screenshot" /> -->
-  Add screenshots later
-</div>
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="images/screenshot1.png" alt="Screenshot 1" width="300"/></td>
+    <td><img src="images/screenshot2.png" alt="Screenshot 2" width="300"/></td>
+    <td><img src="images/screenshot3.png" alt="Screenshot 3" width="300"/></td>
+  </tr>
+</table>
 
 
 <!-- Features -->
 ### :dart: Features
 - **Flight Search:** Search for available flights between selected departure and destination airports.
 - **Flight Information:** View flight details including airline, price, flight time, and flight segments.
-- **Route Details:** Browse available flight routes with options to filter by airline, price, or time.
+- **Route Details:** Browse available flight routes with options to sort flights by timem, price and set optimum ranges for it.
 
 <!-- TechStack -->
 ### :space_invader: Tech Stack
@@ -52,4 +57,4 @@ Distributed under the no License. See LICENSE for more information.
 
 <!-- Acknowledgments -->
 ## :gem: Acknowledgements
- - [Readme Template](https://github.com/othneildrew/Best-README-Template)
+ - [Readme Template](https://github.com/Louis3797/awesome-readme-template)

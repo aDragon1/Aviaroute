@@ -14,6 +14,9 @@ interface AirportsDAO {
     @Query("SELECT * FROM airports where airportIndex = :index")
     fun getAirportByIndex(index: Int): Airport?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(airport: Airport)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(airports: List<Airport>)
 }

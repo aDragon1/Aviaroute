@@ -16,7 +16,7 @@ import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import self.adragon.aviaroute.data.repo.AirportRepository
 import self.adragon.aviaroute.data.repo.SegmentRepository
 
-class SearchFlightInfoItem : Fragment(R.layout.search_result_flight_info_item) {
+class SearchedFlightInfoItem : Fragment(R.layout.search_result_flight_info_item) {
 
     private lateinit var flightNumberTextView: TextView
     private lateinit var departureTimeTextView: TextView

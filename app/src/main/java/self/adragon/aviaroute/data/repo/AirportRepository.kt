@@ -11,4 +11,5 @@ class AirportRepository(private val airportsDAO: AirportsDAO) {
     fun getAirportByIndexes(indexes: List<Int>) = indexes.map { getAirportByIndex(it) }
 
     suspend fun insert(airport: Airport) = airportsDAO.insert(airport)
+    suspend fun insertAll(airports: List<Airport>) = airportsDAO.insertAll(airports)
 }

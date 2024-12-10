@@ -17,18 +17,14 @@
             android:src="@drawable/arrow_left_drawable" />
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/radioTitleTextView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sortContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:textSize="18sp" />
+        android:layout_height="wrap_content" />
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
+    <LinearLayout
+        android:id="@+id/priceRangeSliderContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp">
-    </RadioGroup>
+        android:orientation="vertical" />
 </LinearLayout>
-

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.data.model.searchResult.SearchResultFlight
 
-class FlightRecyclerViewAdapter(private val onClick: (SearchResultFlight) -> Any) :
+class FlightRecyclerViewAdapter(private val onClick: (SearchResultFlight) -> Unit) :
     RecyclerView.Adapter<FlightRecyclerViewAdapter.FlightRVViewHolder>() {
 
     private var flights: List<SearchResultFlight> = listOf()

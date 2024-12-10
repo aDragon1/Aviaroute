@@ -19,4 +19,5 @@ class SegmentRepository(private val segmentsDAO: SegmentsDAO) {
     }
 
     suspend fun insert(segment: Segment) = segmentsDAO.insert(segment)
+    suspend fun insertAll(segments: List<Segment>) = segmentsDAO.insertAll(segments)
 }

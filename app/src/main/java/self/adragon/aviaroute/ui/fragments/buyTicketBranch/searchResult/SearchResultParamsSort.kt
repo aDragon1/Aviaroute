@@ -1,30 +1,25 @@
-package self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlight
+package self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchResult
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.Toast
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.data.model.enums.SortOrder
 import self.adragon.aviaroute.ui.viewmodels.SearchResulViewModel
 
-class FlightSearchSort : DialogFragment(R.layout.search_params_sort) {
+class SearchResultParamsSort : Fragment(R.layout.search_result_params_sort) {
 
     private val searchResultViewModel: SearchResulViewModel by activityViewModels()
-
-    override fun onCreateDialog(savedInstanceState: Bundle?) =
-        Dialog(requireContext(), R.style.FullScreenDialogTheme)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val radioGroup: RadioGroup = view.findViewById(R.id.radioGroup)
-        val backImageButton: ImageButton = view.findViewById(R.id.backImageButton)
 
         val b1 = createRadioButton("Цене ↑")
         val b2 = createRadioButton("Цене ↓")
@@ -39,30 +34,23 @@ class FlightSearchSort : DialogFragment(R.layout.search_params_sort) {
             SortOrder.PRICE_DOWN -> 1
             SortOrder.DATE_UP -> 2
             SortOrder.DATE_DOWN -> 3
-
-            else -> 2
         }
         radioButtons[index].isChecked = true
 
         radioGroup.setOnCheckedChangeListener { group: RadioGroup, checkedID: Int ->
-            val button = group.findViewById<RadioButton>(checkedID)
-            val order = when (radioButtons.indexOf(button)) {
-                0 -> SortOrder.PRICE_UP
-                1 -> SortOrder.PRICE_DOWN
-                2 -> SortOrder.DATE_UP
-                3 -> SortOrder.DATE_DOWN
+            lifecycleScope.launch {
+                val button = group.findViewById<RadioButton>(checkedID)
+                val order = when (radioButtons.indexOf(button)) {
+                    0 -> SortOrder.PRICE_UP
+                    1 -> SortOrder.PRICE_DOWN
+                    2 -> SortOrder.DATE_UP
+                    3 -> SortOrder.DATE_DOWN
 
-                else -> SortOrder.DATE_DOWN
+                    else -> SortOrder.DATE_DOWN
+                }
+
+                searchResultViewModel.setSortOrder(order)
             }
-
-            val result = searchResultViewModel.setSortOrder(order)
-
-            if (result)
-                Toast.makeText(requireContext(), "Сортировка изменена", Toast.LENGTH_SHORT).show()
-        }
-
-        backImageButton.setOnClickListener {
-            dismiss()
         }
     }
 

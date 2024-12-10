@@ -1,7 +1,6 @@
 package self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlight
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
@@ -10,10 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import self.adragon.aviaroute.R
-import self.adragon.aviaroute.ui.fragments.buyTicketBranch.PickDate
-import self.adragon.aviaroute.ui.fragments.buyTicketBranch.FlightSearchResult
+import self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchResult.SearchResult
 
-class FlightSearch : Fragment(R.layout.flight_search), OnClickListener {
+class Search : Fragment(R.layout.flight_search), OnClickListener {
 
     private lateinit var swapButton: ImageButton
     private lateinit var searchButton: Button
@@ -54,14 +52,14 @@ class FlightSearch : Fragment(R.layout.flight_search), OnClickListener {
         destinationIncludeTextView.hint = "Куда"
 
         departureAirportInclude.setOnClickListener {
-            val fragForResult = FlightSearchForResult { name, index ->
+            val fragForResult = SearchForResult { name, index ->
                 departureIncludeTextView.text = name
                 departureIndex = index + 1
             }
             fragForResult.show(childFragmentManager, "")
         }
         destinationAirportInclude.setOnClickListener {
-            val fragForResult = FlightSearchForResult { name, index ->
+            val fragForResult = SearchForResult { name, index ->
                 destinationIncludeTextView.text = name
                 destinationIndex = index + 1
             }
@@ -80,7 +78,8 @@ class FlightSearch : Fragment(R.layout.flight_search), OnClickListener {
         val pickDate = PickDate { epochSeconds ->
             departureDateEpochSeconds = epochSeconds
         }
-        childFragmentManager.beginTransaction()
+        childFragmentManager
+            .beginTransaction()
             .replace(R.id.datePickerContainer, pickDate)
             .commit()
     }
@@ -111,7 +110,7 @@ class FlightSearch : Fragment(R.layout.flight_search), OnClickListener {
 
                     putLong("departureDateEpochSeconds", departureDateEpochSeconds)
                 }
-                val searchResultFragment = FlightSearchResult().apply { arguments = arg }
+                val searchResultFragment = SearchResult().apply { arguments = arg }
                 searchResultFragment.show(childFragmentManager, "cool tag")
             }
         }

@@ -11,7 +11,10 @@ interface FlightsDAO {
     @Query("SELECT * FROM flights")
     fun getAllFlights(): List<Flight>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(flight: Flight)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(flights: List<Flight>)
 }
 

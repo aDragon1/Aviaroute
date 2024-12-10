@@ -1,10 +1,11 @@
 package self.adragon.aviaroute.utils
 
 import android.util.Log
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 import self.adragon.aviaroute.data.model.Airport
 import self.adragon.aviaroute.data.model.Flight
 import self.adragon.aviaroute.data.model.Segment
-import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.math.min
@@ -39,20 +40,18 @@ class Generator {
     private val minFlightTime = HOUR
     private val maxFlightTime = DAY
 
-    private fun generateAirports(index: Int): Airport {
+    private fun generateAirport(index: Int): Airport {
         val code = airportCodes[index - 1]
         val (name, info) = airportsInfoMap[code]!!
 
         return Airport(index, code, name, info)
     }
 
-    private fun generateSegments(index: Int, departureIndex: Int, destinationIndex: Int): Segment {
+    private fun generateSegment(index: Int, departureIndex: Int, destinationIndex: Int): Segment {
         val price = (minPrice + Math.random() * (maxPrice - minPrice)).round()
 
         val flightTime = (minFlightTime..maxFlightTime).random().toLong()
-        return Segment(
-            index, departureIndex, destinationIndex, flightTime, price, "Im lazy to generate it"
-        )
+        return Segment(index, departureIndex, destinationIndex, flightTime, price, "")
     }
 
     private fun takeSequentialSegments(segments: List<Segment>, n: Int): List<Int> {
@@ -73,33 +72,50 @@ class Generator {
         return resultSegments
     }
 
-    fun generateDatabaseData(
-        numAirports: Int, numSegments: Int, numFlights: Int, maxSegmentsPerFlight: Int
-    ): Triple<List<Airport>, List<Segment>, List<Flight>> {
+    fun generateAirports(numAirports: Int) =
+        (1..min(airportCodes.size, numAirports)).map { generateAirport(it) }
 
-        val airports = (1..min(airportCodes.size, numAirports)).map { generateAirports(it) }
-        val segments = (1..numSegments).map { index ->
-            val departure = airports.random().airportIndex
-            val destination = airports.filter { it.airportIndex != departure }.random().airportIndex
+    fun generateSegments(numSegments: Int) = (1..numSegments).map { index ->
+        val departureIndex = airportCodes.mapIndexed { i, s -> s to i }.random().second
+        val destinationIndex = airportCodes.mapIndexed { i, s -> s to i }
+            .filter { it.second != departureIndex }.random().second
 
-            generateSegments(index, departure, destination)
-        }
-        val flights = (1..numFlights).map { flightIndex ->
-            val segmentsSize = (1..maxSegmentsPerFlight).random()
-            val flightSegments = takeSequentialSegments(segments, segmentsSize)
-
-            val departureDateEpochSeconds = (minDate..maxDate).random()
-
-            flightSegments.mapIndexed { segPosition, segIndex ->
-                Flight(flightIndex, segIndex, segPosition + 1, departureDateEpochSeconds)
-            }
-        }
-
-        val resultFlights = mutableListOf<Flight>()
-        flights.forEach { resultFlights.addAll(it) }
-
-        return Triple(airports, segments, resultFlights)
+        generateSegment(index, departureIndex + 1, destinationIndex + 1)
     }
+
+    // change to flow + somehow split that mess into pices
+    fun generateFlights(
+        segments: List<Segment>, numFlights: Int, maxSegmentsPerFlight: Int
+    ) = (1..numFlights).map { flightIndex ->
+        Log.d("mytag", "process flight #$flightIndex")
+
+        val segmentsSize = (1..maxSegmentsPerFlight).random()
+        val flightSegments = takeSequentialSegments(segments, segmentsSize)
+
+        val departureDateEpochSeconds = (minDate..maxDate).random()
+
+        flightSegments.mapIndexed { segPosition, segIndex ->
+            Flight(flightIndex, segIndex, segPosition + 1, departureDateEpochSeconds)
+        }
+    }.flatten()
+
+//    fun generateFlights(segments: List<Segment>, numFlights: Int, maxSegmentsPerFlight: Int) =
+//        channelFlow {
+//            repeat(numFlights - 1) { flightIndex ->
+//                launch {
+//                    val segmentsSize = (1..maxSegmentsPerFlight).random()
+//                    val flightSegments = takeSequentialSegments(segments, segmentsSize)
+//
+//                    val departureEpochSec = (minDate..maxDate).random()
+//
+//                    flightSegments.mapIndexed { segPosition, segIndex ->
+//                        val f =
+//                            Flight(flightIndex + 1, segIndex, segPosition + 1, departureEpochSec)
+//                        send(f)
+//                    }
+//                }
+//            }
+//        }
 
     private fun Double.round() = (this * 100).roundToInt() / 100.toDouble()
 }

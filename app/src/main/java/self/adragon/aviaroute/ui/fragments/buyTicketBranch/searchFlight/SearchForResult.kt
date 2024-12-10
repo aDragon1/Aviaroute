@@ -18,7 +18,7 @@ import self.adragon.aviaroute.data.database.FlightsDatabase
 import self.adragon.aviaroute.data.repo.AirportRepository
 import self.adragon.aviaroute.ui.adapters.FlightSearchForResultRVAdapter
 
-class FlightSearchForResult(private val onItemSelect: (String, Int) -> Unit) :
+class SearchForResult(private val onItemSelect: (String, Int) -> Unit) :
     DialogFragment(R.layout.flight_search_for_result) {
 
     private lateinit var backImageButton: ImageButton

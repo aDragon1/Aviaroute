@@ -3,9 +3,7 @@ package self.adragon.aviaroute.ui.fragments.viewPurchasedBranch
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
-import android.media.Image
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -15,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.ui.adapters.PurchasedRVAdapter
-import self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlightInfo.SearchFlightInfo
+import self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlightInfo.SearchedFlightInfo
 import self.adragon.aviaroute.ui.viewmodels.PurchasedViewModel
 
 class PurchaseHistory : DialogFragment(R.layout.purchase_history) {
@@ -41,7 +39,7 @@ class PurchaseHistory : DialogFragment(R.layout.purchase_history) {
         flightSearchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = PurchasedRVAdapter { clicked ->
-            val frag = SearchFlightInfo(clicked)
+            val frag = SearchedFlightInfo(clicked)
             frag.show(childFragmentManager, "SEARCH_INFO_DIALOG_TAG")
         }
         flightSearchResultRecyclerView.adapter = adapter

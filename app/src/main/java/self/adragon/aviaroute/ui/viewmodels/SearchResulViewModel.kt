@@ -3,14 +3,13 @@ package self.adragon.aviaroute.ui.viewmodels
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import self.adragon.aviaroute.data.database.FlightsDatabase
 import self.adragon.aviaroute.data.model.enums.SortOrder
@@ -20,70 +19,115 @@ import self.adragon.aviaroute.data.repo.SearchFlightRepository
 
 class SearchResulViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mediatorLiveData: MediatorLiveData<List<SearchResultFlight>> = MediatorLiveData()
-    val searchResult: MutableLiveData<List<SearchResultFlight>> get() = mediatorLiveData
+    private val _searchResultFlightsFlow: MutableStateFlow<List<SearchResultFlight>> =
+        MutableStateFlow(emptyList())
+    val searchResultFlightsFlow = _searchResultFlightsFlow.asStateFlow()
 
-    var sortOrder: MutableLiveData<SortOrder> = MutableLiveData(SortOrder.DATE_UP)
+    private var _sortOrder = MutableStateFlow(SortOrder.DATE_UP)
+    var sortOrder: StateFlow<SortOrder> = _sortOrder
 
     private val errorValue = -1
 
     private val searchFlightsRepository: SearchFlightRepository
 
+    var departureAirportIndex = -1
+    var destinationAirportIndex = -1
+    var departureDateEpochSeconds = -1L
+    private var dayRange = -1L to -1L
+
+    private var priceRange = -1L to -1L
+    private var flightTimeRange = -1L to -1L
+
+    private var curPriceRange = -1L to -1L
+    private var curFlightTimeRange = -1L to -1L
+
     init {
         val db: FlightsDatabase = FlightsDatabase.getDatabase(application)
         searchFlightsRepository = SearchFlightRepository(db.searchFlightsDAO())
 
-        mediatorLiveData.addSource(sortOrder) { viewModelScope.launch { getSearchResult() } }
+        viewModelScope.launch { _sortOrder.collect { getSearchResult() } }
     }
-
-    private var departureAirportIndex = -1
-    private var destinationAirportIndex = -1
-    var departureDateEpochSeconds = -1L
 
     fun setSearchResult(departureIndex: Int, destinationIndex: Int, epochSeconds: Long) {
         departureAirportIndex = departureIndex
         destinationAirportIndex = destinationIndex
         departureDateEpochSeconds = epochSeconds
+        dayRange = LocalDateConverter().getDayRange(epochSeconds)
+
+        val logMessage = "Search summary:\n" +
+                "   departureAirportIndex = $departureAirportIndex\n" +
+                "   destinationAirportIndex = $destinationAirportIndex\n" +
+                "   dayStart = ${dayRange.first}\n" +
+                "   dayEnd = ${dayRange.second}"
+        Log.d("mytag", logMessage)
 
         getSearchResult()
     }
 
-    private fun getSearchResult() = CoroutineScope(Dispatchers.IO).launch {
-        searchResult.postValue(emptyList())
+    private fun getSearchResult() = viewModelScope.launch {
+        searchFlightsRepository.getSearchedFlights(
+            departureAirportIndex,
+            destinationAirportIndex,
+            dayRange,
+            curPriceRange,
+            curFlightTimeRange,
+            sortOrder.value,
+            errorValue
+        ).flowOn(Dispatchers.IO).collect { flights -> _searchResultFlightsFlow.update { flights } }
 
-        val dayRange = LocalDateConverter().getDayRange(departureDateEpochSeconds)
-        val searchResultFlightsFlow = searchFlightsRepository.getSearchedFlights(
-            departureAirportIndex, destinationAirportIndex, dayRange, sortOrder.value!!, errorValue
+        priceRange = searchFlightsRepository.getPriceRange(
+            departureAirportIndex, destinationAirportIndex, dayRange, errorValue
         )
-
-        searchResultFlightsFlow.onEach {
-            val currentList = searchResult.value?.toMutableList() ?: mutableListOf()
-            currentList.addAll(it)
-            searchResult.postValue(currentList)
-        }.catch { e -> Log.e("mytag", e.message ?: "") }.collect()
+        flightTimeRange = searchFlightsRepository.getFlightTimeRange(
+            departureAirportIndex, destinationAirportIndex, dayRange, errorValue
+        )
     }
 
-    fun getClosestDate(
-        departureAirportIndex: Int, destinationAirportIndex: Int,
-        epochSeconds: Long
-    ) = searchFlightsRepository.getClosestDate(
-        departureAirportIndex, destinationAirportIndex, epochSeconds, errorValue
+    fun getClosestDate() = searchFlightsRepository.getClosestDate(
+        departureAirportIndex, destinationAirportIndex, dayRange, errorValue
     )
 
+    fun getPriceRange(): Pair<Pair<Long, Long>, Pair<Long, Long>> {
 
-    fun setSortOrder(order: SortOrder): Boolean {
-        if (sortOrder.value != order) {
-            sortOrder.value = order
-            return true
-        }
-        return false
+        val a = if (priceRange.first != -1L) priceRange
+        else searchFlightsRepository.getPriceRange(
+            departureAirportIndex, destinationAirportIndex, dayRange, errorValue
+        )
+        val b = if (curPriceRange.first == -1L) a else curPriceRange
+        return a to b
     }
 
+    fun getFlightTimeRange(): Pair<Pair<Long, Long>, Pair<Long, Long>> {
+        val a = if (flightTimeRange.first != -1L) flightTimeRange
+        else searchFlightsRepository.getFlightTimeRange(
+            departureAirportIndex, destinationAirportIndex, dayRange, errorValue
+        )
+        val b = if (curFlightTimeRange.first == -1L) a else curFlightTimeRange
+        return a to b
+    }
+
+    fun setSortOrder(order: SortOrder) {
+        _sortOrder.value = order
+    }
+
+    fun setPriceFlightTimeRange(minMax: Pair<Long, Long>, isPrice: Boolean) {
+        if (isPrice) curPriceRange = minMax
+        else curFlightTimeRange = minMax
+
+        getSearchResult()
+    }
+
+
     fun clear() {
-        searchResult.postValue(emptyList())
+        _searchResultFlightsFlow.value = emptyList()
 
         departureAirportIndex = -1
         destinationAirportIndex = -1
         departureDateEpochSeconds = -1L
+
+        priceRange = -1L to -1L
+        flightTimeRange = -1L to -1L
+        curPriceRange = -1L to -1L
+        curFlightTimeRange = -1L to -1L
     }
 }

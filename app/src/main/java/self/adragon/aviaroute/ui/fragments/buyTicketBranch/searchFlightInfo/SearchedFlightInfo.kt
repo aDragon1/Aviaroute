@@ -3,6 +3,7 @@ package self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlightInfo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
@@ -21,10 +22,14 @@ import self.adragon.aviaroute.data.model.typeConverters.LocalDateConverter
 import self.adragon.aviaroute.ui.viewmodels.PurchasedViewModel
 import kotlin.math.roundToInt
 
-class SearchFlightInfo(private val flight: SearchResultFlight) :
+class SearchedFlightInfo(private val flight: SearchResultFlight) :
     DialogFragment(R.layout.search_result_flight_info), OnClickListener {
 
+    var isShown = false
+
     private lateinit var backImageButton: ImageButton
+    private lateinit var flightSearchInfoCodesTextView: TextView
+
     private lateinit var buyButton: Button
     private lateinit var totalFlightTimeTextView: TextView
     private lateinit var totalPriceTextView: TextView
@@ -40,9 +45,14 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        isShown = true
+
         initViews(view)
 
-        buyButton.text = "Выбрать за ${flight.totalPrice.round()} у.е"
+        val codes = "->"
+        flightSearchInfoCodesTextView.text = codes
+        buyButton.text = "Выбрать билет"
+
         flight.flightSegments.forEachIndexed { i, _ ->
             // All segments from first to current
             val segmentsIndexesIncludeCurrent = flight.flightSegments.slice(0..i).toIntArray()
@@ -51,7 +61,7 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
             args.putLong("departureTimeEpoch", flight.departureDateEpoch)
             args.putIntArray("segmentsIndexesIncludeCurrent", segmentsIndexesIncludeCurrent)
 
-            val fragItem = SearchFlightInfoItem().apply { arguments = args }
+            val fragItem = SearchedFlightInfoItem().apply { arguments = args }
             childFragmentManager.commit {
                 setReorderingAllowed(true)
                 add(container.id, fragItem)
@@ -72,6 +82,8 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
         container = view.findViewById(R.id.searchResultFlightInfoFragmentContainer)
 
         backImageButton = view.findViewById(R.id.backImageButton)
+        flightSearchInfoCodesTextView = view.findViewById(R.id.flightSearchInfoCodesTextView)
+
         buyButton = view.findViewById(R.id.buyButton)
         totalFlightTimeTextView = view.findViewById(R.id.totalFlightTimeTextView)
         totalPriceTextView = view.findViewById(R.id.totalPriceTextView)
@@ -100,20 +112,17 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
                 val cond = purchasedViewModel.purchasedLiveData.value
                     ?.any { it.flightIndex == flight.flightIndex } == true
 
-                val (titleText, messageText) = if (cond) {
-                    "Повторная покупка билета" to
-                            "Вы уверены, что хотите повторно купить билет из $departure в $destination за $totalPrice?"
-                } else {
-                    "Покупка билета" to
-                            "Вы уверены, что хотите купить билет из $departure в $destination за $totalPrice?"
-                }
+                val (titleText, messageText) = if (cond) "Повторное добавление билета" to
+                        "Вы уверены, что хотите повторно выбрать билет из $departure в $destination за $totalPrice?"
+                else "Добавление билета" to
+                        "Вы уверены, что хотите выбрать билет из $departure в $destination за $totalPrice?"
 
                 AlertDialog.Builder(requireContext())
                     .setTitle(titleText)
                     .setMessage(messageText)
                     .setPositiveButton("Да") { _, _ ->
                         insert(flight)
-                        val message = "Билет из $departure в $destination был куплен"
+                        val message = "Билет из $departure в $destination был выбран"
                         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 
                         dismiss()
@@ -124,6 +133,11 @@ class SearchFlightInfo(private val flight: SearchResultFlight) :
 
             R.id.backImageButton -> dismiss()
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        isShown = false
     }
 
     private fun Double.round() = (this * 100).roundToInt() / 100.toDouble()

@@ -21,7 +21,7 @@
             style="@style/CommonTextViewStyle" />
 
         <ImageButton
-            android:id="@+id/sortImageButton"
+            android:id="@+id/paramsImgButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -61,10 +61,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp" />
 
-    <include
-        android:visibility="gone"
-        android:id="@+id/dialogInclude"
-        layout="@layout/my_dialog" />
-
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/adjustDateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

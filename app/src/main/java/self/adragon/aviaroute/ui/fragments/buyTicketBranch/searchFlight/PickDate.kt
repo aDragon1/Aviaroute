@@ -1,9 +1,8 @@
-package self.adragon.aviaroute.ui.fragments.buyTicketBranch
+package self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlight
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView

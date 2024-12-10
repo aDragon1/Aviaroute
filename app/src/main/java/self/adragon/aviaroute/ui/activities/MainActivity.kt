@@ -2,8 +2,10 @@ package self.adragon.aviaroute.ui.activities
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -14,15 +16,17 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import self.adragon.aviaroute.R
 import self.adragon.aviaroute.data.database.FlightsDatabase
 import self.adragon.aviaroute.data.repo.AirportRepository
 import self.adragon.aviaroute.data.repo.FlightsRepository
 import self.adragon.aviaroute.data.repo.SegmentRepository
 import self.adragon.aviaroute.ui.adapters.ViewPagerAdapter
-import self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlight.FlightSearch
+import self.adragon.aviaroute.ui.fragments.buyTicketBranch.searchFlight.Search
 import self.adragon.aviaroute.ui.fragments.viewPurchasedBranch.Profile
 import self.adragon.aviaroute.utils.Generator
+import kotlin.time.measureTime
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     private val APP_PREFERENCES = "aviaroute_setting"
     private val APP_PREFERENCES_DATABASE_EXIST = "isDatabaseExist"
 
+    private lateinit var setting: SharedPreferences
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabLayout)
 
         val fragments: List<Fragment> =
-            listOf(FlightSearch(), Profile())
+            listOf(Search(), Profile())
 
         viewPager2.adapter = ViewPagerAdapter(fragments, this)
         viewPager2.isUserInputEnabled = false
@@ -55,17 +61,10 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
 //        requestAllPerms()
-
-        val setting = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
-
+        setting = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         val isDatabaseExist = setting.getBoolean(APP_PREFERENCES_DATABASE_EXIST, false)
-        if (!isDatabaseExist) {
-            populateDatabase()
-            setting.edit().putBoolean(APP_PREFERENCES_DATABASE_EXIST, true).apply()
-            Toast.makeText(
-                applicationContext, "База данных была успешно пересоздана", Toast.LENGTH_SHORT
-            ).show()
-        }
+        if (!isDatabaseExist)
+            initializeDatabase()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -74,23 +73,44 @@ class MainActivity : AppCompatActivity() {
         requestPermissions(arrayOf(perm), 1)
     }
 
+    private fun initializeDatabase() {
+        val time = measureTime { populateDatabase() }
+        setting.edit().putBoolean(APP_PREFERENCES_DATABASE_EXIST, true).apply()
+        Toast.makeText(
+            applicationContext, "База данных была успешно создана за $time", Toast.LENGTH_SHORT
+        ).show()
+        Log.d("mytag", "База данных была успешно создана за $time")
+    }
+
     private fun populateDatabase() {
         FlightsDatabase.deleteDatabase(applicationContext)
-
-        val (airports, segments, flights) =
-            Generator()
-                .generateDatabaseData(5, 100, 1000, 3)
-
-        val db = FlightsDatabase.getDatabase(applicationContext)
-
-        val airportsRepo = AirportRepository(db.airportsDAO())
-        val segmentsRepo = SegmentRepository(db.segmentsDAO())
-        val flightsRepo = FlightsRepository(db.flightsDAO())
+        val gen = Generator()
 
         CoroutineScope(Dispatchers.IO).launch {
-            airports.forEach { airportsRepo.insert(it) }
-            segments.forEach { segmentsRepo.insert(it) }
-            flights.forEach { flightsRepo.insert(it) }
+            val db = FlightsDatabase.getDatabase(applicationContext)
+            val airportsRepo = AirportRepository(db.airportsDAO())
+            val segmentsRepo = SegmentRepository(db.segmentsDAO())
+            val flightsRepo = FlightsRepository(db.flightsDAO())
+
+            val airports = gen.generateAirports(5)
+            val segments = gen.generateSegments(1000)
+            val flights = gen.generateFlights(segments, 10000, 4)
+
+            airportsRepo.insertAll(airports)
+            segmentsRepo.insertAll(segments)
+            flightsRepo.insertAll(flights)
+
+//            gen.generateFlights(segments, 100000, 4)
+//                .onEach { flight ->
+//                    flightsRepo.insert(flight)
+//                    Log.d("mytag", "Flight with key = ${flight.key} inserted")
+//                }.flowOn(Dispatchers.IO).collect {}
+
+            withContext(Dispatchers.Main) {
+                Log.d("mytag", "airports size - ${airports.size}")
+                Log.d("mytag", "segments size - ${segments.size}")
+                Log.d("mytag", "flights size - ${flights.size}")
+            }
         }
     }
 }

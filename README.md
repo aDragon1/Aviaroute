@@ -2,27 +2,27 @@
 
 # :notebook_with_decorative_cover: Table of Contents
 
-- [About the Project](#star2-about-the-project)
-    * [Screenshots](#camera-screenshots)
-    * [Tech Stack](#space_invader-tech-stack)
-    * [Features](#dart-features)
-- [License](#warning-license)
-- [Acknowledgements](#gem-acknowledgements)
+- [О проекте](#star2-about-the-project)
+    * [Скриншоты](#camera-screenshots)
+    * [Технологический стек](#space_invader-tech-stack)
+    * [Фичи](#dart-features)
+- [Лицензия](#warning-license)
+- [Значимые ссылки](#gem-acknowledgements)
 
 <!-- About the Project -->
 
 # Aviaroute
 
-## :star2: About the Project
+## :star2: О Проекте
 
-Aviaroute is an Android application designed to search for and book flight tickets. It allows users to view available
-flight routes, including information such as departure and destination airports, ticket prices, and flight times.
+Aviaroute — Android-приложение разработанное в рамках курсовой работы по предмету Проектирование программного
+обеспечения.
+Приложение предназначенно для поиска авиабилетов. Это позволяет пользователям просматривать доступные
+маршруты полетов, включая такую информация, как аэропорты отправления и назначения, цены на билеты и время полета.
 
 <!-- Screenshots -->
 
-### :camera: Screenshots
-
-## Screenshots
+## :camera: Скриншоты
 
 |                                             |                                             |
 |---------------------------------------------|---------------------------------------------|
@@ -51,22 +51,22 @@ flight routes, including information such as departure and destination airports,
 
 <!-- Features -->
 
-### :dart: Features
+### :dart: Фичи
 
-- **Flight Search:** Search for available flights between selected departure and destination airports.
-- **Flight Information:** View flight details including airline, price, flight time, and flight segments.
-- **Route Details:** Browse available flight routes with options to sort flights by timem, price and set optimum ranges
-  for it.
+- **Flight Search:** Ищите доступные маршруты, выбирая между аэропортом отправления, назначения и датой вылета
+- **Flight Information:** Смотрите полную информацию о рейсе
+- **Route Details:** Ищите рейсы, сортируйте поисковые результаты по цене, дате отправления, а так же кастомизируйте
+  поисковую выдачу, двигая слайдеры на цену и время в пути
 
 <!-- TechStack -->
 
-### :space_invader: Tech Stack
+### :space_invader: Технологический стак
 
-- **[Android SDK](https://developer.android.com/tools/releases/platform-tools)**: Provides the necessary tools and APIs
-  for building Android applications.
-- **[kotlin](https://kotlinlang.org/)**: Main programming language used for Android development.
-- **[Room Database](https://developer.android.com/training/data-storage/room)**: Local database for managing flight and
-  airport data with seamless integration into the app.
+- **[Android SDK](https://developer.android.com/tools/releases/platform-tools)**: Предоставляет необходимые инструменты
+  и API для создания android-приложений
+- **[kotlin](https://kotlinlang.org/)**: Основной язык программирования, для создания android-приложений
+- **[Room Database](https://developer.android.com/training/data-storage/room)**: Локальная база данных для хранения
+  аэропортов, сегментов, перелётов
 
 ## Installation
 
@@ -77,10 +77,10 @@ flight routes, including information such as departure and destination airports,
 
 ## :warning: License
 
-Distributed under the no License. See LICENSE for more information.
+Поставляет без лицензии. Смотри LICENSE для дополнительной информации
 
 <!-- Acknowledgments -->
 
-## :gem: Acknowledgements
+## :gem: Значимые ссылки
 
 - [Readme Template](https://github.com/Louis3797/awesome-readme-template)

@@ -1,6 +1,6 @@
 <!-- Table of Contents -->
 
-# :notebook_with_decorative_cover: Table of Contents
+# :notebook_with_decorative_cover: Содержание 
 
 - [О проекте](#star2-about-the-project)
     * [Скриншоты](#camera-screenshots)
